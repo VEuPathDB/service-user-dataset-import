@@ -13,9 +13,11 @@ services:
     image: veupathdb/user-dataset-handler-biom:${BIOME_HANDLER_TAG:-latest}
     networks:
       - internal
+      - monitoring-ext
     labels:
       - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}"
       - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
 
 
   #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
@@ -44,6 +46,7 @@ services:
     networks:
       - internal
       - traefik
+      - monitoring-ext
     depends_on:
       - postgres
       - biom-handler
@@ -86,6 +89,7 @@ services:
       - "traefik.http.services.${TRAEFIK_ROUTER:-udis-dev}.loadbalancer.server.port=${SERVICE_PORT:-80}"
       - "traefik.http.services.${TRAEFIK_ROUTER:-udis-dev}.loadbalancer.passhostheader=${TRAEFIK_PASSHOSTHEADER:-false}"
       - "traefik.docker.network=traefik"
+      - "prometheus-scrape.enabled=true"
 
 
 volumes:
@@ -95,4 +99,6 @@ networks:
   internal:
     external: false
   traefik:
+    external: true
+  monitoring-ext:
     external: true
