@@ -5,14 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "reachable", "online"})
-public class DependencyStatusImpl implements DependencyStatus
-{
+@JsonPropertyOrder({
+    "name",
+    "reachable",
+    "online"
+})
+public class DependencyStatusImpl implements DependencyStatus {
   @JsonProperty("name")
   private String name;
 
   @JsonProperty("reachable")
-  private boolean reachable;
+  private Boolean reachable;
 
   @JsonProperty("online")
   private DependencyStatus.OnlineType online;
@@ -28,12 +31,12 @@ public class DependencyStatusImpl implements DependencyStatus
   }
 
   @JsonProperty("reachable")
-  public boolean getReachable() {
+  public Boolean getReachable() {
     return this.reachable;
   }
 
   @JsonProperty("reachable")
-  public void setReachable(boolean reachable) {
+  public void setReachable(Boolean reachable) {
     this.reachable = reachable;
   }
 

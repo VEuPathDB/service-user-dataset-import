@@ -24,4 +24,20 @@ public enum DatasetOrigin
 
     return Optional.empty();
   }
+
+  public static DatasetOrigin fromApiOrigin(org.veupathdb.service.userds.generated.model.DatasetOrigin datasetOrigin) {
+    return fromString(datasetOrigin.getValue())
+        .orElseThrow(() -> new IllegalStateException(
+            "Internal API DatasetOrigin enum does not match external API DatasetOrigin enum [missing " + datasetOrigin + "]"));
+  }
+
+  public org.veupathdb.service.userds.generated.model.DatasetOrigin toApiOrigin() {
+    for (org.veupathdb.service.userds.generated.model.DatasetOrigin origin :
+        org.veupathdb.service.userds.generated.model.DatasetOrigin.values()) {
+      if (origin.getValue().equals(value)) {
+        return origin;
+      }
+    }
+    throw new IllegalStateException("External API DatasetOrigin enum does not match internal DatasetOrigin enum [missing " + value + "]");
+  }
 }

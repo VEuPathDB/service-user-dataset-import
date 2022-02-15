@@ -3,9 +3,8 @@ package org.veupathdb.service.userds.controller;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax.ws.rs.NotFoundException;
 import org.veupathdb.service.userds.Main;
-import org.veupathdb.service.userds.generated.model.NotFoundErrorImpl;
 import org.veupathdb.service.userds.generated.resources.Projects;
 import org.veupathdb.service.userds.model.Service;
 
@@ -18,7 +17,7 @@ public class ProjectController implements Projects {
 
   @Override
   public GetProjectsResponse getProjects() {
-    return GetProjectsResponse.respond200(
+    return GetProjectsResponse.respond200WithApplicationJson(
       Main.jsonConfig.getServices().stream()
         .map(Service::getProjects)
         .flatMap(Arrays::stream)
@@ -28,31 +27,26 @@ public class ProjectController implements Projects {
   }
 
   @Override
-  public GetProjectHandlers
-  getProjectHandlers(String project) {
+  public GetProjectsDatasetTypesByProjectResponse getProjectsDatasetTypesByProject(String project) {
     final var svcs = Main.jsonConfig.getServices()
       .stream()
       .filter(svc -> asList(svc.getProjects()).contains(project))
       .toArray(Service[]::new);
 
     if (svcs.length == 0) {
-      final var out = new NotFoundErrorImpl();
-      out.setMessage("no configured handlers for " + project);
-      return GetProjectHandlers
-        .respond404(out);
+      throw new NotFoundException("no configured handlers for " + project);
     }
 
-    return GetProjectHandlers
-      .respond200(stream(svcs)
+    return GetProjectsDatasetTypesByProjectResponse
+      .respond200WithApplicationJson((stream(svcs)
         .map(Service::getDsType)
         .sorted()
         .distinct()
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList())));
   }
 
   @Override
-  public GetHandlerFileTypes
-  getHandlerFileTypes(
+  public GetProjectsDatasetTypesFileTypesByProjectAndDsTypeResponse getProjectsDatasetTypesFileTypesByProjectAndDsType(
     String project,
     String dsType
   ) {
@@ -63,15 +57,11 @@ public class ProjectController implements Projects {
       .toArray(Service[]::new);
 
     if (svcs.length == 0) {
-      final var out = new NotFoundErrorImpl();
-      out.setMessage(format("dataset type %s not found for project type %s",
-        dsType, project));
-      return GetHandlerFileTypes
-        .respond404(out);
+      throw new NotFoundException(format("dataset type %s not found for project type %s", dsType, project));
     }
 
-    return GetHandlerFileTypes
-      .respond200(Stream.concat(stream(svcs)
+    return GetProjectsDatasetTypesFileTypesByProjectAndDsTypeResponse
+      .respond200WithApplicationJson(Stream.concat(stream(svcs)
         .map(Service::getFileTypes)
         .flatMap(Arrays::stream), Stream.of(BASE_FILE_TYPES))
         .sorted()

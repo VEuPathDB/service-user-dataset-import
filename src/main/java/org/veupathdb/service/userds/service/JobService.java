@@ -15,6 +15,7 @@ import org.veupathdb.service.userds.model.JobRow;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.MetaValidationResult;
 import org.veupathdb.service.userds.model.ProjectCache;
+import org.veupathdb.service.userds.model.handler.DatasetOrigin;
 import org.veupathdb.service.userds.repo.DeleteJobQuery;
 import org.veupathdb.service.userds.repo.InsertJobQuery;
 import org.veupathdb.service.userds.repo.SelectJobQuery;
@@ -80,18 +81,18 @@ public class JobService
 
     // Verify the request has a non-empty name
     if (req.getDatasetName() == null || req.getDatasetName().isBlank()) {
-      out.getByKey().put(KEY_DS_NAME, singletonList(valErrBlankName));
+      out.getByKey().put("datasetName", singletonList(valErrBlankName));
     }
 
     // Verify that there are handlers configured for the selected jobs
     var projects = validateProjectsKey(req.getProjects());
     if (!projects.isEmpty()) {
-      out.getByKey().put(KEY_PROJECTS, projects);
+      out.getByKey().put("projects", projects);
     }
 
-    var type = validateTypeKey(req.getDatasetType(), req);
+    var type = validateTypeKey(req.getDatasetType().getValue(), req);
     if (!type.isEmpty()) {
-      out.getByKey().put(KEY_DS_TYPE, type);
+      out.getByKey().put("datasetType", type);
     }
 
     return out.containsErrors() ? Optional.of(out) : Optional.empty();
@@ -105,30 +106,30 @@ public class JobService
    * @return StatusResponse object.
    */
   public static StatusResponse rowToStatus(JobRow row) {
-    var out = new StatusResponseImpl()
-      .setId(row.getJobId())
-      .setDatasetName(row.getName())
-      .setDescription(row.getDescription().orElse(null))
-      .setSummary(row.getSummary().orElse(null))
-      .setStatus(row.getStatus().getName())
-      .setProjects(row.getProjects())
-      .setStarted(Date.from(
+    var out = new StatusResponseImpl();
+    out.setId(row.getJobId());
+    out.setDatasetName(row.getName());
+    out.setDescription(row.getDescription().orElse(null));
+    out.setSummary(row.getSummary().orElse(null));
+    out.setStatus(row.getStatus().toApiStatus());
+    out.setProjects(row.getProjects());
+    out.setStarted(Date.from(
         row.getStarted()
           .atZone(ZoneId.systemDefault())
-          .toInstant()))
-      .setFinished(row.getFinished()
+          .toInstant()));
+    out.setFinished(row.getFinished()
         .map(d -> d.atZone(ZoneId.systemDefault()))
         .map(ZonedDateTime::toInstant)
         .map(Date::from)
-        .orElse(null))
-      .setDatasetId(row.getIrodsId());
+        .orElse(null));
+    out.setDatasetId(row.getIrodsId());
 
     // If the job status was "errored" then we only have an exception message
     // to return.
     if (row.getStatus() == JobStatus.ERRORED) {
-      out.setStatusDetails(new StatusResponseImpl.StatusDetailsTypeImpl(
-        new JobErrorImpl()
-          .setMessage(row.getMessage().map(JsonNode::textValue).orElse(null))));
+      JobError error = new JobErrorImpl();
+      error.setMessage(row.getMessage().map(JsonNode::textValue).orElse(null));
+      out.setStatusDetails(new StatusResponseImpl.StatusDetailsTypeImpl(error));
 
     // If the job status was "rejected" then we have validation errors to
     // return.
@@ -162,7 +163,7 @@ public class JobService
   public static JobRow prepToJob(PrepRequest body, String jobId, long userId) {
     return new JobRow(jobId, userId, JobStatus.AWAITING_UPLOAD,
       body.getDatasetName(), body.getDescription(), body.getSummary(),
-      body.getProjects(), body.getOrigin(), body.getDatasetType());
+      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getDatasetOrigin()), body.getDatasetType().getValue());
   }
 
   /**

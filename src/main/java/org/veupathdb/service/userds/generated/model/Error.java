@@ -11,21 +11,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     property = "status"
 )
 @JsonSubTypes({
-    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.InvalidInputError.class),
+    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.ServerError.class),
+    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.ForbiddenError.class),
+    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.UnprocessableEntityError.class),
     @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.NotFoundError.class),
     @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.BadRequestError.class),
     @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.UnauthorizedError.class),
-    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.ServerError.class),
-    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.ErrorResponse.class)
+    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.MethodNotAllowedError.class),
+    @JsonSubTypes.Type(org.veupathdb.service.userds.generated.model.Error.class)
 })
 @JsonDeserialize(
-    as = ErrorResponseImpl.class
+    as = ErrorImpl.class
 )
-public interface ErrorResponse {
-  String _DISCRIMINATOR_TYPE_NAME = "ErrorResponse";
+public interface Error {
+  ErrorType _DISCRIMINATOR_TYPE_NAME = null;
 
   @JsonProperty("status")
-  String getStatus();
+  ErrorType getStatus();
 
   @JsonProperty("message")
   String getMessage();

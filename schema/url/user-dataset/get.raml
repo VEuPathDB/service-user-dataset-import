@@ -31,42 +31,42 @@ types:
       origin: common.DatasetOrigin
       started: datetime
       finished?: datetime
-    examples:
-      success:
-        id: 2XZEXFa8FMA2HmQpHpA9eA
-        datasetName: foo
-        projects:
-          - MicrobiomeDB
-        status: success
-        datasetId: 12354
-        origin: direct-upload
-        started: '2020-06-04T16:06:26.074Z'
-        finished: '2020-06-04T16:06:28.090Z'
-      errored:
-        id: c4f3cd7b-d08a-4ed4-ba56-1f39cafa1534
-        datasetName: my-dataset
-        projects:
-          - PlasmoDB
-        status: errored
-        origin: direct-upload
-        started: '2020-06-04T16:06:26.074Z'
-        finished: '2020-06-04T16:06:28.090Z'
-        statusDetails:
-          message: Dataset handler failed to process uploaded user dataset.
-      rejected:
-        id: 1mDdvV8elI0wXUVD6AUGi4
-        datasetName: foo
-        projects:
-          - MicrobiomeDB
-        status: rejected
-        origin: direct-upload
-        statusDetails:
-          errors:
-            general:
-              - "('Could not load the file as BIOM - does it conform to the specification on https://biom-format.org?', ValueError('Expecting object: line 139 column 1 (char 1554)',))"
-            byKey: {}
-        started: '2020-06-04T16:06:26.074Z'
-        finished: '2020-06-04T16:06:28.090Z'
+#    examples:
+#      success:
+#        id: 2XZEXFa8FMA2HmQpHpA9eA
+#        datasetName: foo
+#        projects:
+#          - MicrobiomeDB
+#        status: success
+#        datasetId: 12354
+#        origin: direct-upload
+#        started: '2020-06-04T16:06:26.074Z'
+#        finished: '2020-06-04T16:06:28.090Z'
+#      errored:
+#        id: c4f3cd7b-d08a-4ed4-ba56-1f39cafa1534
+#        datasetName: my-dataset
+#        projects:
+#          - PlasmoDB
+#        status: errored
+#        origin: direct-upload
+#        started: '2020-06-04T16:06:26.074Z'
+#        finished: '2020-06-04T16:06:28.090Z'
+#        statusDetails:
+#          message: Dataset handler failed to process uploaded user dataset.
+#      rejected:
+#        id: 1mDdvV8elI0wXUVD6AUGi4
+#        datasetName: foo
+#        projects:
+#          - MicrobiomeDB
+#        status: rejected
+#        origin: direct-upload
+#        statusDetails:
+#          errors:
+#            general:
+#              - "('Could not load the file as BIOM - does it conform to the specification on https://biom-format.org?', ValueError('Expecting object: line 139 column 1 (char 1554)',))"
+#            byKey: {}
+#        started: '2020-06-04T16:06:26.074Z'
+#        finished: '2020-06-04T16:06:28.090Z'
   ValidationErrors:
     properties:
       errors:

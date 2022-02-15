@@ -11,7 +11,6 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder("message")
 public class JobErrorImpl implements JobError {
-
   @JsonProperty("message")
   private String message;
 
@@ -24,9 +23,8 @@ public class JobErrorImpl implements JobError {
   }
 
   @JsonProperty("message")
-  public JobError setMessage(String message) {
+  public void setMessage(String message) {
     this.message = message;
-    return this;
   }
 
   @JsonAnyGetter
@@ -35,8 +33,7 @@ public class JobErrorImpl implements JobError {
   }
 
   @JsonAnySetter
-  public JobError setAdditionalProperties(String key, Object value) {
+  public void setAdditionalProperties(String key, Object value) {
     this.additionalProperties.put(key, value);
-    return this;
   }
 }

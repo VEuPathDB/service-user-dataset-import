@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonTypeName("bad-request")
+@JsonTypeName("bad-method")
 @JsonDeserialize(
-    as = BadRequestErrorImpl.class
+    as = MethodNotAllowedErrorImpl.class
 )
-public interface BadRequestError extends Error {
-  ErrorType _DISCRIMINATOR_TYPE_NAME = ErrorType.BADREQUEST;
+public interface MethodNotAllowedError extends Error {
+  ErrorType _DISCRIMINATOR_TYPE_NAME = ErrorType.BADMETHOD;
 
   @JsonProperty("status")
   ErrorType getStatus();

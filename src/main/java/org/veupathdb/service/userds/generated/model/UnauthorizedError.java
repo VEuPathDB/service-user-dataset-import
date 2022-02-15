@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(
     as = UnauthorizedErrorImpl.class
 )
-public interface UnauthorizedError extends ErrorResponse {
-  String _DISCRIMINATOR_TYPE_NAME = "unauthorized";
+public interface UnauthorizedError extends Error {
+  ErrorType _DISCRIMINATOR_TYPE_NAME = ErrorType.UNAUTHORIZED;
 
   @JsonProperty("status")
-  String getStatus();
+  ErrorType getStatus();
 
   @JsonProperty("message")
   String getMessage();

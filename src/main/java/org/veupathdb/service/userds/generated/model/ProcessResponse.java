@@ -28,5 +28,6 @@ public interface ProcessResponse {
     StatusType(String name) {
       this.name = name;
     }
-  }
+    public String getValue(){ return name; } 
+}
 }

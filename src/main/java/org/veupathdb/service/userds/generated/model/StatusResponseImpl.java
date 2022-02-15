@@ -6,13 +6,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import java.util.Date;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StatusResponseImpl implements StatusResponse
-{
+@JsonPropertyOrder({
+    "id",
+    "datasetName",
+    "description",
+    "summary",
+    "datasetId",
+    "projects",
+    "status",
+    "statusDetails",
+    "origin",
+    "started",
+    "finished"
+})
+public class StatusResponseImpl implements StatusResponse {
   @JsonProperty("id")
   private String id;
 
@@ -25,34 +36,39 @@ public class StatusResponseImpl implements StatusResponse
   @JsonProperty("summary")
   private String summary;
 
-  @JsonProperty("stepPercent")
-  private int stepPercent;
+  @JsonProperty("datasetId")
+  private Integer datasetId;
 
   @JsonProperty("projects")
-  private List < String > projects;
+  private List<String> projects;
 
   @JsonProperty("status")
-  private String status;
+  private JobStatus status;
 
   @JsonProperty("statusDetails")
   private StatusResponse.StatusDetailsType statusDetails;
 
-  private int datasetId;
+  @JsonProperty("origin")
+  private DatasetOrigin origin;
 
   @JsonProperty("started")
   @JsonFormat(
-    shape = JsonFormat.Shape.STRING,
-    pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
   )
-  @JsonDeserialize(using = TimestampDeserializer.class)
+  @JsonDeserialize(
+      using = TimestampDeserializer.class
+  )
   private Date started;
 
   @JsonProperty("finished")
   @JsonFormat(
-    shape = JsonFormat.Shape.STRING,
-    pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
   )
-  @JsonDeserialize(using = TimestampDeserializer.class)
+  @JsonDeserialize(
+      using = TimestampDeserializer.class
+  )
   private Date finished;
 
   @JsonProperty("id")
@@ -61,9 +77,8 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("id")
-  public StatusResponse setId(String id) {
+  public void setId(String id) {
     this.id = id;
-    return this;
   }
 
   @JsonProperty("datasetName")
@@ -72,9 +87,8 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("datasetName")
-  public StatusResponse setDatasetName(String datasetName) {
+  public void setDatasetName(String datasetName) {
     this.datasetName = datasetName;
-    return this;
   }
 
   @JsonProperty("description")
@@ -83,9 +97,8 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("description")
-  public StatusResponse setDescription(String description) {
+  public void setDescription(String description) {
     this.description = description;
-    return this;
   }
 
   @JsonProperty("summary")
@@ -94,42 +107,38 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("summary")
-  public StatusResponse setSummary(String summary) {
+  public void setSummary(String summary) {
     this.summary = summary;
-    return this;
   }
 
-  @JsonProperty("stepPercent")
-  public int getStepPercent() {
-    return this.stepPercent;
+  @JsonProperty("datasetId")
+  public Integer getDatasetId() {
+    return this.datasetId;
   }
 
-  @JsonProperty("stepPercent")
-  public StatusResponse setStepPercent(int stepPercent) {
-    this.stepPercent = stepPercent;
-    return this;
+  @JsonProperty("datasetId")
+  public void setDatasetId(Integer datasetId) {
+    this.datasetId = datasetId;
   }
 
   @JsonProperty("projects")
-  public List < String > getProjects() {
+  public List<String> getProjects() {
     return this.projects;
   }
 
   @JsonProperty("projects")
-  public StatusResponse setProjects(List < String > projects) {
+  public void setProjects(List<String> projects) {
     this.projects = projects;
-    return this;
   }
 
   @JsonProperty("status")
-  public String getStatus() {
+  public JobStatus getStatus() {
     return this.status;
   }
 
   @JsonProperty("status")
-  public StatusResponse setStatus(String status) {
+  public void setStatus(JobStatus status) {
     this.status = status;
-    return this;
   }
 
   @JsonProperty("statusDetails")
@@ -138,9 +147,18 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("statusDetails")
-  public StatusResponse setStatusDetails(StatusResponse.StatusDetailsType statusDetails) {
+  public void setStatusDetails(StatusResponse.StatusDetailsType statusDetails) {
     this.statusDetails = statusDetails;
-    return this;
+  }
+
+  @JsonProperty("origin")
+  public DatasetOrigin getOrigin() {
+    return this.origin;
+  }
+
+  @JsonProperty("origin")
+  public void setOrigin(DatasetOrigin origin) {
+    this.origin = origin;
   }
 
   @JsonProperty("started")
@@ -149,9 +167,8 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("started")
-  public StatusResponse setStarted(Date started) {
+  public void setStarted(Date started) {
     this.started = started;
-    return this;
   }
 
   @JsonProperty("finished")
@@ -160,28 +177,22 @@ public class StatusResponseImpl implements StatusResponse
   }
 
   @JsonProperty("finished")
-  public StatusResponse setFinished(Date finished) {
+  public void setFinished(Date finished) {
     this.finished = finished;
-    return this;
   }
 
-  @Override
-  public Integer getDatasetId() {
-    return datasetId == 0 ? null : datasetId;
-  }
-
-  @Override
-  public StatusResponse setDatasetId(int datasetId) {
-    this.datasetId = datasetId;
-    return this;
-  }
-
-  @JsonDeserialize(using = StatusDetailsType.StatusDetailsDeserializer.class)
-  @JsonSerialize(using = StatusDetailsType.Serializer.class)
-  public static class StatusDetailsTypeImpl
-    implements StatusResponse.StatusDetailsType
-  {
+  @JsonDeserialize(
+      using = StatusDetailsType.StatusDetailsDeserializer.class
+  )
+  @JsonSerialize(
+      using = StatusDetailsType.Serializer.class
+  )
+  public static class StatusDetailsTypeImpl implements StatusResponse.StatusDetailsType {
     private Object anyType;
+
+    private StatusDetailsTypeImpl() {
+      this.anyType = null;
+    }
 
     public StatusDetailsTypeImpl(ValidationErrors validationErrors) {
       this.anyType = validationErrors;
@@ -192,23 +203,20 @@ public class StatusResponseImpl implements StatusResponse
     }
 
     public ValidationErrors getValidationErrors() {
-      if (!(anyType instanceof ValidationErrors))
-        throw new IllegalStateException(
-          "fetching wrong type out of the union: org.veupathdb.service.userds.generated.model.ValidationErrors");
+      if ( !(anyType instanceof  ValidationErrors)) throw new IllegalStateException("fetching wrong type out of the union: org.veupathdb.service.userds.generated.model.ValidationErrors");
       return (ValidationErrors) anyType;
     }
 
-    public boolean isValidationErrors() {
+    public Boolean isValidationErrors() {
       return anyType instanceof ValidationErrors;
     }
 
     public JobError getJobError() {
-      if (!(anyType instanceof JobError)) throw new IllegalStateException(
-        "fetching wrong type out of the union: org.veupathdb.service.userds.generated.model.JobError");
+      if ( !(anyType instanceof  JobError)) throw new IllegalStateException("fetching wrong type out of the union: org.veupathdb.service.userds.generated.model.JobError");
       return (JobError) anyType;
     }
 
-    public boolean isJobError() {
+    public Boolean isJobError() {
       return anyType instanceof JobError;
     }
   }

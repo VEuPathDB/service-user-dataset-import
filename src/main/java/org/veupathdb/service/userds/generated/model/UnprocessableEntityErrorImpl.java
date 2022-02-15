@@ -7,32 +7,28 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeName("invalid-input")
 @JsonPropertyOrder({
-  "status",
-  "message",
-  "errors"
+    "status",
+    "message",
+    "errors"
 })
-public class InvalidInputErrorImpl implements InvalidInputError
-{
+public class UnprocessableEntityErrorImpl implements UnprocessableEntityError {
   @JsonProperty("status")
-  private final String status = _DISCRIMINATOR_TYPE_NAME;
+  private final ErrorType status = _DISCRIMINATOR_TYPE_NAME;
 
   @JsonProperty("message")
   private String message;
 
   @JsonProperty("errors")
-  private InvalidInputError.ErrorsType errors;
+  private UnprocessableEntityError.ErrorsType errors;
 
   @JsonProperty("status")
-  public String getStatus() {
+  public ErrorType getStatus() {
     return this.status;
   }
 
@@ -47,65 +43,73 @@ public class InvalidInputErrorImpl implements InvalidInputError
   }
 
   @JsonProperty("errors")
-  public InvalidInputError.ErrorsType getErrors() {
+  public UnprocessableEntityError.ErrorsType getErrors() {
     return this.errors;
   }
 
   @JsonProperty("errors")
-  public void setErrors(InvalidInputError.ErrorsType errors) {
+  public void setErrors(UnprocessableEntityError.ErrorsType errors) {
     this.errors = errors;
   }
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @JsonPropertyOrder({"general", "byKey"})
-  public static class ErrorsTypeImpl implements InvalidInputError.ErrorsType
-  {
+  @JsonPropertyOrder({
+      "general",
+      "byKey"
+  })
+  public static class ErrorsTypeImpl implements UnprocessableEntityError.ErrorsType {
     @JsonProperty("general")
-    private List < String > general;
+    private List<String> general;
 
     @JsonProperty("byKey")
-    private InvalidInputError.ErrorsType.ByKeyType byKey;
+    private UnprocessableEntityError.ErrorsType.ByKeyType byKey;
 
-    public ErrorsTypeImpl() {
-      this.general = new ArrayList <>();
-      this.byKey = new ByKeyTypeImpl();
-    }
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new ExcludingMap();
 
     @JsonProperty("general")
-    public List < String > getGeneral() {
+    public List<String> getGeneral() {
       return this.general;
     }
 
     @JsonProperty("general")
-    public void setGeneral(List < String > general) {
+    public void setGeneral(List<String> general) {
       this.general = general;
     }
 
     @JsonProperty("byKey")
-    public InvalidInputError.ErrorsType.ByKeyType getByKey() {
+    public UnprocessableEntityError.ErrorsType.ByKeyType getByKey() {
       return this.byKey;
     }
 
     @JsonProperty("byKey")
-    public void setByKey(InvalidInputError.ErrorsType.ByKeyType byKey) {
+    public void setByKey(UnprocessableEntityError.ErrorsType.ByKeyType byKey) {
       this.byKey = byKey;
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+      return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperties(String key, Object value) {
+      this.additionalProperties.put(key, value);
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonPropertyOrder
-    public static class ByKeyTypeImpl
-      implements InvalidInputError.ErrorsType.ByKeyType
-    {
+    public static class ByKeyTypeImpl implements UnprocessableEntityError.ErrorsType.ByKeyType {
       @JsonIgnore
-      private Map < String, List<String> > additionalProperties = new HashMap <>();
+      private Map<String, Object> additionalProperties = new ExcludingMap();
 
       @JsonAnyGetter
-      public Map < String, List<String> > getAdditionalProperties() {
+      public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
       }
 
       @JsonAnySetter
-      public void setAdditionalProperties(String key, List<String> value) {
+      public void setAdditionalProperties(String key, Object value) {
         this.additionalProperties.put(key, value);
       }
     }

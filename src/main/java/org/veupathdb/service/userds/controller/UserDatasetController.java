@@ -1,21 +1,26 @@
 package org.veupathdb.service.userds.controller;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.stream.Collectors;
-import javax.ws.rs.*;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gusdb.fgputil.accountdb.UserProfile;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.userds.generated.model.PrepRequest;
+import org.veupathdb.service.userds.generated.model.PrepResponse;
 import org.veupathdb.service.userds.generated.model.PrepResponseImpl;
 import org.veupathdb.service.userds.generated.model.ProcessResponseImpl;
+import org.veupathdb.service.userds.generated.model.UserDatasetsJobIdPostMultipartFormData;
 import org.veupathdb.service.userds.generated.resources.UserDatasets;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.handler.DatasetOrigin;
@@ -28,7 +33,10 @@ import org.veupathdb.service.userds.util.Errors;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
 import org.veupathdb.service.userds.util.http.Header;
 
-import static org.veupathdb.service.userds.service.JobService.*;
+import static org.veupathdb.service.userds.service.JobService.deleteJobById;
+import static org.veupathdb.service.userds.service.JobService.getJobByToken;
+import static org.veupathdb.service.userds.service.JobService.getJobsByUser;
+import static org.veupathdb.service.userds.service.JobService.validateJobMeta;
 
 @Authenticated
 public class UserDatasetController implements UserDatasets
@@ -57,7 +65,7 @@ public class UserDatasetController implements UserDatasets
   }
 
   @Override
-  public GetResponse getUserJobs(Integer limit, Integer page) {
+  public GetUserDatasetsResponse getUserDatasets(Integer limit, Integer page) {
     if (limit != null) {
       if (limit < 0) {
         throw new BadRequestException("limit must not be less than 0");
@@ -75,55 +83,53 @@ public class UserDatasetController implements UserDatasets
     }
 
     try {
-      return GetResponse.respond200(getJobsByUser(UserProvider.lookupUser(req)
-        .map(UserProfile::getUserId)
+      return GetUserDatasetsResponse.respond200WithApplicationJson(getJobsByUser(UserProvider.lookupUser(req)
+        .map(User::getUserID)
         .orElseThrow(), limit, page)
         .stream()
         .map(JobService::rowToStatus)
         .collect(Collectors.toList()));
     } catch (Exception e) {
-      log.error(errRowFetch, e);
-      return GetResponse.respond500(ErrFac.new500(req, e));
+      throw toRuntimeException(errRowFetch, e);
     }
   }
 
   @Override
-  public GetByJobIdResponse getJob(String jobId) {
+  public GetUserDatasetsByJobIdResponse getUserDatasetsByJobId(String jobId) {
     try {
       return getJobByToken(jobId)
         .map(JobService::rowToStatus)
-        .map(GetByJobIdResponse::respond200)
-        .orElseGet(() -> GetByJobIdResponse.respond404(ErrFac.new404()));
+        .map(GetUserDatasetsByJobIdResponse::respond200WithApplicationJson)
+        .orElseThrow(() -> new NotFoundException());
     } catch (Exception e) {
-      log.error(errRowFetch, e);
-      return GetByJobIdResponse.respond500(ErrFac.new500(req, e));
+      throw toRuntimeException(errRowFetch, e);
     }
   }
 
   @Override
-  public PostResponse createJob(PrepRequest entity) {
+  public PostUserDatasetsResponse postUserDatasets(PrepRequest entity) {
     validateJobMeta(entity).ifPresent(r -> {
       throw new UnprocessableEntityException(r.getGeneral(), r.getByKey());
     });
 
     // TODO: This field will become required when Galaxy runs imports through
     //       this service.
-    if (entity.getOrigin() == null)
-      entity.setOrigin(DatasetOrigin.DIRECT_UPLOAD);
+    if (entity.getDatasetOrigin() == null)
+      entity.setDatasetOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
 
     try {
-      return PostResponse.respond200(new PrepResponseImpl()
-        .setJobId(JobService.insertJob(entity, UserProvider.lookupUser(req)
-          .map(UserProfile::getUserId)
-          .orElseThrow())));
-    } catch (Throwable e) {
-      log.error(errJobCreate, e);
-      return PostResponse.respond500(ErrFac.new500(req, e));
+      String jobId = JobService.insertJob(entity, UserProvider.lookupUser(req).map(User::getUserID).orElseThrow());
+      PrepResponse response = new PrepResponseImpl();
+      response.setJobId(jobId);
+      return PostUserDatasetsResponse.respond200WithApplicationJson(response);
+    }
+    catch (Throwable e) {
+      throw toRuntimeException(errJobCreate, e);
     }
   }
 
   @Override
-  public void deleteJob(String jobId) {
+  public DeleteUserDatasetsByJobIdResponse deleteUserDatasetsByJobId(String jobId) {
     try {
       var job = getJobByToken(jobId).orElseThrow(NotFoundException::new);
 
@@ -131,6 +137,7 @@ public class UserDatasetController implements UserDatasets
         case AWAITING_UPLOAD, REJECTED, ERRORED, SUCCESS -> deleteJobById(job.getDbId());
         default -> throw new BadRequestException(errDelJobRunning);
       }
+      return DeleteUserDatasetsByJobIdResponse.respond204();
     } catch (WebApplicationException e) {
       // Don't catch Jax-RS exceptions.
       throw e;
@@ -141,8 +148,8 @@ public class UserDatasetController implements UserDatasets
   }
 
   @Override
-  public PostByJobIdResponse postImport(String jobId, InputStream body) {
-    try {
+  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(String jobId, UserDatasetsJobIdPostMultipartFormData entity) {
+    try (InputStream file = new FileInputStream(entity.getFile())){
       var job = getJobByToken(jobId)
         .orElseThrow(NotFoundException::new);
 
@@ -158,20 +165,23 @@ public class UserDatasetController implements UserDatasets
         ThreadProvider.newThread(new Importer(
           job,
           bound,
-          new InputStreamNotifier(body, lock)
+          new InputStreamNotifier(file, lock)
         )).start();
         lock.wait();
       }
 
-      return PostByJobIdResponse.respond200(new ProcessResponseImpl());
+      return PostUserDatasetsByJobIdResponse.respond200WithApplicationJson(new ProcessResponseImpl());
     } catch (WebApplicationException e) {
       // Don't catch Jax-RS exceptions.
       throw e;
     } catch (Throwable e) {
-      log.error(errProcessImport, e);
-      return PostByJobIdResponse.respond500(ErrFac.new500(req, e));
-    } finally {
-      Errors.swallow(body::close);
+      throw toRuntimeException(errProcessImport, e);
     }
   }
+
+  private RuntimeException toRuntimeException(String logMessage, Throwable e) {
+    log.error(logMessage, e);
+    return (e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(logMessage, e));
+  }
+
 }

@@ -11,13 +11,13 @@ public class ProcessResponseImpl implements ProcessResponse {
       value = "status",
       defaultValue = "ok"
   )
-  private StatusType status = StatusType.OK;
+  private ProcessResponse.StatusType status;
 
   @JsonProperty(
       value = "status",
       defaultValue = "ok"
   )
-  public StatusType getStatus() {
+  public ProcessResponse.StatusType getStatus() {
     return this.status;
   }
 
@@ -25,7 +25,7 @@ public class ProcessResponseImpl implements ProcessResponse {
       value = "status",
       defaultValue = "ok"
   )
-  public void setStatus(StatusType status) {
+  public void setStatus(ProcessResponse.StatusType status) {
     this.status = status;
   }
 }

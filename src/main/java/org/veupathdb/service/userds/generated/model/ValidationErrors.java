@@ -11,14 +11,17 @@ import java.util.Map;
     as = ValidationErrorsImpl.class
 )
 public interface ValidationErrors {
+  @JsonProperty("errors")
+  ErrorsType getErrors();
+
+  @JsonProperty("errors")
+  void setErrors(ErrorsType errors);
+
   @JsonAnyGetter
   Map<String, Object> getAdditionalProperties();
 
   @JsonAnySetter
   void setAdditionalProperties(String key, Object value);
-
-  @JsonProperty("errors")
-  ErrorsType getErrors();
 
   @JsonDeserialize(
       as = ValidationErrorsImpl.ErrorsTypeImpl.class

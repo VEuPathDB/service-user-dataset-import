@@ -5,20 +5,18 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.List;
 import java.util.Map;
 
 @JsonTypeName("invalid-input")
 @JsonDeserialize(
-  as = InvalidInputErrorImpl.class
+    as = UnprocessableEntityErrorImpl.class
 )
-public interface InvalidInputError extends ErrorResponse
-{
-  String _DISCRIMINATOR_TYPE_NAME = "invalid-input";
+public interface UnprocessableEntityError extends Error {
+  ErrorType _DISCRIMINATOR_TYPE_NAME = ErrorType.INVALIDINPUT;
 
   @JsonProperty("status")
-  String getStatus();
+  ErrorType getStatus();
 
   @JsonProperty("message")
   String getMessage();
@@ -33,15 +31,14 @@ public interface InvalidInputError extends ErrorResponse
   void setErrors(ErrorsType errors);
 
   @JsonDeserialize(
-    as = InvalidInputErrorImpl.ErrorsTypeImpl.class
+      as = UnprocessableEntityErrorImpl.ErrorsTypeImpl.class
   )
-  interface ErrorsType
-  {
+  interface ErrorsType {
     @JsonProperty("general")
-    List < String > getGeneral();
+    List<String> getGeneral();
 
     @JsonProperty("general")
-    void setGeneral(List < String > general);
+    void setGeneral(List<String> general);
 
     @JsonProperty("byKey")
     ByKeyType getByKey();
@@ -49,16 +46,21 @@ public interface InvalidInputError extends ErrorResponse
     @JsonProperty("byKey")
     void setByKey(ByKeyType byKey);
 
+    @JsonAnyGetter
+    Map<String, Object> getAdditionalProperties();
+
+    @JsonAnySetter
+    void setAdditionalProperties(String key, Object value);
+
     @JsonDeserialize(
-      as = InvalidInputErrorImpl.ErrorsTypeImpl.ByKeyTypeImpl.class
+        as = UnprocessableEntityErrorImpl.ErrorsTypeImpl.ByKeyTypeImpl.class
     )
-    interface ByKeyType
-    {
+    interface ByKeyType {
       @JsonAnyGetter
-      Map < String, List < String > > getAdditionalProperties();
+      Map<String, Object> getAdditionalProperties();
 
       @JsonAnySetter
-      void setAdditionalProperties(String key, List < String > value);
+      void setAdditionalProperties(String key, Object value);
     }
   }
 }
