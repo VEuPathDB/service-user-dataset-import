@@ -9,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "status",
     "message"
 })
-public class ErrorResponseImpl implements ErrorResponse {
+public class ErrorImpl implements Error {
   @JsonProperty("status")
-  private final String status = _DISCRIMINATOR_TYPE_NAME;
+  private final ErrorType status = _DISCRIMINATOR_TYPE_NAME;
 
   @JsonProperty("message")
   private String message;
 
   @JsonProperty("status")
-  public String getStatus() {
+  public ErrorType getStatus() {
     return this.status;
   }
 

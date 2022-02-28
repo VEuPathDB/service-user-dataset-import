@@ -1,126 +1,132 @@
 package org.veupathdb.service.userds.generated.resources;
 
-import java.io.InputStream;
 import java.util.List;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
-
-import org.veupathdb.service.userds.generated.model.*;
+import org.veupathdb.service.userds.generated.model.PrepRequest;
+import org.veupathdb.service.userds.generated.model.PrepResponse;
+import org.veupathdb.service.userds.generated.model.ProcessResponse;
+import org.veupathdb.service.userds.generated.model.StatusResponse;
+import org.veupathdb.service.userds.generated.model.UserDatasetsJobIdPostMultipartFormData;
 import org.veupathdb.service.userds.generated.support.ResponseDelegate;
 
 @Path("/user-datasets")
 public interface UserDatasets {
   @GET
   @Produces("application/json")
-  GetResponse getUserJobs(
-    @QueryParam("limit") Integer limit,
-    @QueryParam("page") Integer page
-  );
+  GetUserDatasetsResponse getUserDatasets(@QueryParam("limit") @DefaultValue("100") Integer limit,
+      @QueryParam("page") @DefaultValue("0") Integer page);
 
   @POST
   @Produces("application/json")
   @Consumes("application/json")
-  PostResponse createJob(PrepRequest entity);
+  PostUserDatasetsResponse postUserDatasets(PrepRequest entity);
+
+  @DELETE
+  @Path("/{jobId}")
+  DeleteUserDatasetsByJobIdResponse deleteUserDatasetsByJobId(@PathParam("jobId") String jobId);
 
   @GET
   @Path("/{jobId}")
   @Produces("application/json")
-  GetByJobIdResponse getJob(@PathParam("jobId") String jobId);
+  GetUserDatasetsByJobIdResponse getUserDatasetsByJobId(@PathParam("jobId") String jobId);
 
   @POST
   @Path("/{jobId}")
   @Produces("application/json")
   @Consumes("multipart/form-data")
-  PostByJobIdResponse postImport(
-    @PathParam("jobId")    String jobId,
-    InputStream body
-  );
+  PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(@PathParam("jobId") String jobId,
+      UserDatasetsJobIdPostMultipartFormData entity);
 
-  @DELETE
-  @Path("/{jobId}")
-  void deleteJob(@PathParam("jobId") String jobId);
-
-  class GetResponse extends ResponseDelegate {
-    private GetResponse(Response response, Object entity) {
+  class GetUserDatasetsResponse extends ResponseDelegate {
+    private GetUserDatasetsResponse(Response response, Object entity) {
       super(response, entity);
     }
 
-    public static GetResponse respond200(List<StatusResponse> entity) {
+    private GetUserDatasetsResponse(Response response) {
+      super(response);
+    }
+
+    public static GetUserDatasetsResponse respond200WithApplicationJson(
+        List<StatusResponse> entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
-      GenericEntity<List<StatusResponse>> wrappedEntity = new GenericEntity <>(entity){};
+      GenericEntity<List<StatusResponse>> wrappedEntity = new GenericEntity<List<StatusResponse>>(entity){};
       responseBuilder.entity(wrappedEntity);
-      return new GetResponse(responseBuilder.build(), wrappedEntity);
-    }
-
-    public static GetResponse respond500(ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new GetResponse(responseBuilder.build(), entity);
+      return new GetUserDatasetsResponse(responseBuilder.build(), wrappedEntity);
     }
   }
 
-  class PostResponse extends ResponseDelegate {
-    private PostResponse(Response response, Object entity) {
+  class PostUserDatasetsResponse extends ResponseDelegate {
+    private PostUserDatasetsResponse(Response response, Object entity) {
       super(response, entity);
     }
 
-    public static PostResponse respond200(PrepResponse entity) {
+    private PostUserDatasetsResponse(Response response) {
+      super(response);
+    }
+
+    public static PostUserDatasetsResponse respond200WithApplicationJson(PrepResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
-      return new PostResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostResponse respond500(ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new PostResponse(responseBuilder.build(), entity);
+      return new PostUserDatasetsResponse(responseBuilder.build(), entity);
     }
   }
 
-  class GetByJobIdResponse extends ResponseDelegate {
-    private GetByJobIdResponse(Response response, Object entity) {
+  class DeleteUserDatasetsByJobIdResponse extends ResponseDelegate {
+    private DeleteUserDatasetsByJobIdResponse(Response response, Object entity) {
       super(response, entity);
     }
 
-    public static GetByJobIdResponse respond200(
+    private DeleteUserDatasetsByJobIdResponse(Response response) {
+      super(response);
+    }
+
+    public static DeleteUserDatasetsByJobIdResponse respond204() {
+      Response.ResponseBuilder responseBuilder = Response.status(204);
+      return new DeleteUserDatasetsByJobIdResponse(responseBuilder.build());
+    }
+  }
+
+  class GetUserDatasetsByJobIdResponse extends ResponseDelegate {
+    private GetUserDatasetsByJobIdResponse(Response response, Object entity) {
+      super(response, entity);
+    }
+
+    private GetUserDatasetsByJobIdResponse(Response response) {
+      super(response);
+    }
+
+    public static GetUserDatasetsByJobIdResponse respond200WithApplicationJson(
         StatusResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
-      return new GetByJobIdResponse(responseBuilder.build(), entity);
-    }
-
-    public static GetByJobIdResponse respond404(
-        NotFoundError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(404).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new GetByJobIdResponse(responseBuilder.build(), entity);
-    }
-
-    public static GetByJobIdResponse respond500(ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new GetByJobIdResponse(responseBuilder.build(), entity);
+      return new GetUserDatasetsByJobIdResponse(responseBuilder.build(), entity);
     }
   }
 
-  class PostByJobIdResponse extends ResponseDelegate {
-    private PostByJobIdResponse(Response response, Object entity) {
+  class PostUserDatasetsByJobIdResponse extends ResponseDelegate {
+    private PostUserDatasetsByJobIdResponse(Response response, Object entity) {
       super(response, entity);
     }
 
-    public static PostByJobIdResponse respond200(
+    private PostUserDatasetsByJobIdResponse(Response response) {
+      super(response);
+    }
+
+    public static PostUserDatasetsByJobIdResponse respond200WithApplicationJson(
         ProcessResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
-      return new PostByJobIdResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostByJobIdResponse respond500(
-        ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new PostByJobIdResponse(responseBuilder.build(), entity);
+      return new PostUserDatasetsByJobIdResponse(responseBuilder.build(), entity);
     }
   }
 }

@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(
     as = NotFoundErrorImpl.class
 )
-public interface NotFoundError extends ErrorResponse {
-  String _DISCRIMINATOR_TYPE_NAME = "not-found";
+public interface NotFoundError extends Error {
+  ErrorType _DISCRIMINATOR_TYPE_NAME = ErrorType.NOTFOUND;
 
   @JsonProperty("status")
-  String getStatus();
+  ErrorType getStatus();
 
   @JsonProperty("message")
   String getMessage();

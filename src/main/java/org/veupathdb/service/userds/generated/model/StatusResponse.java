@@ -1,14 +1,9 @@
 package org.veupathdb.service.userds.generated.model;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -16,91 +11,103 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-@JsonDeserialize(as = StatusResponseImpl.class)
+@JsonDeserialize(
+    as = StatusResponseImpl.class
+)
 public interface StatusResponse {
   @JsonProperty("id")
   String getId();
 
   @JsonProperty("id")
-  StatusResponse setId(String id);
+  void setId(String id);
 
   @JsonProperty("datasetName")
   String getDatasetName();
 
   @JsonProperty("datasetName")
-  StatusResponse setDatasetName(String datasetName);
+  void setDatasetName(String datasetName);
 
   @JsonProperty("description")
   String getDescription();
 
   @JsonProperty("description")
-  StatusResponse setDescription(String description);
+  void setDescription(String description);
 
   @JsonProperty("summary")
   String getSummary();
 
   @JsonProperty("summary")
-  StatusResponse setSummary(String summary);
+  void setSummary(String summary);
 
-  @JsonProperty("stepPercent")
-  int getStepPercent();
+  @JsonProperty("datasetId")
+  Integer getDatasetId();
 
-  @JsonProperty("stepPercent")
-  StatusResponse setStepPercent(int stepPercent);
+  @JsonProperty("datasetId")
+  void setDatasetId(Integer datasetId);
 
   @JsonProperty("projects")
   List<String> getProjects();
 
   @JsonProperty("projects")
-  StatusResponse setProjects(List<String> projects);
+  void setProjects(List<String> projects);
 
   @JsonProperty("status")
-  String getStatus();
+  JobStatus getStatus();
 
   @JsonProperty("status")
-  StatusResponse setStatus(String status);
+  void setStatus(JobStatus status);
 
   @JsonProperty("statusDetails")
   StatusDetailsType getStatusDetails();
 
   @JsonProperty("statusDetails")
-  StatusResponse setStatusDetails(StatusDetailsType statusDetails);
+  void setStatusDetails(StatusDetailsType statusDetails);
+
+  @JsonProperty("origin")
+  DatasetOrigin getOrigin();
+
+  @JsonProperty("origin")
+  void setOrigin(DatasetOrigin origin);
 
   @JsonProperty("started")
   Date getStarted();
 
   @JsonProperty("started")
-  StatusResponse setStarted(Date started);
+  void setStarted(Date started);
 
   @JsonProperty("finished")
   Date getFinished();
 
   @JsonProperty("finished")
-  StatusResponse setFinished(Date started);
+  void setFinished(Date finished);
 
-  @JsonProperty("datasetId")
-  Integer getDatasetId();
-
-  StatusResponse setDatasetId(int datasetId);
-
-  @JsonDeserialize(using = StatusDetailsType.StatusDetailsDeserializer.class)
-  @JsonSerialize(using = StatusDetailsType.Serializer.class)
+  @JsonDeserialize(
+      using = StatusDetailsType.StatusDetailsDeserializer.class
+  )
+  @JsonSerialize(
+      using = StatusDetailsType.Serializer.class
+  )
   interface StatusDetailsType {
     ValidationErrors getValidationErrors();
 
-    boolean isValidationErrors();
+    Boolean isValidationErrors();
 
     JobError getJobError();
 
-    boolean isJobError();
+    Boolean isJobError();
 
     class Serializer extends StdSerializer<StatusDetailsType> {
       public Serializer() {
         super(StatusDetailsType.class);}
 
       public void serialize(StatusDetailsType object, JsonGenerator jsonGenerator,
-          SerializerProvider jsonSerializerProvider) throws IOException {
+          SerializerProvider jsonSerializerProvider) throws IOException, JsonProcessingException {
         if ( object.isValidationErrors()) {
           jsonGenerator.writeObject(object.getValidationErrors());
           return;
@@ -117,16 +124,16 @@ public interface StatusResponse {
       public StatusDetailsDeserializer() {
         super(StatusDetailsType.class);}
 
-      private boolean looksLikeValidationErrors(Map<String, Object> map) {
+      private Boolean looksLikeValidationErrors(Map<String, Object> map) {
         return map.keySet().containsAll(Arrays.asList("errors"));
       }
 
-      private boolean looksLikeJobError(Map<String, Object> map) {
+      private Boolean looksLikeJobError(Map<String, Object> map) {
         return map.keySet().containsAll(Arrays.asList("message"));
       }
 
       public StatusDetailsType deserialize(JsonParser jsonParser,
-          DeserializationContext jsonContext) throws IOException {
+          DeserializationContext jsonContext) throws IOException, JsonProcessingException {
         ObjectMapper mapper  = new ObjectMapper();
         Map<String, Object> map = mapper.readValue(jsonParser, Map.class);
         if ( looksLikeValidationErrors(map) ) return new StatusResponseImpl.StatusDetailsTypeImpl(mapper.convertValue(map, ValidationErrorsImpl.class));

@@ -1,10 +1,13 @@
-#%RAML 1.0
+#%RAML 1.0 Extension
+
+extends: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/base-service.raml
+
 title: User Dataset Import Service
 version: 1.0.0
 mediaType: application/json
 
 uses:
-  error: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v1.1.1/libraries/errors.raml
+  error: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/errors.raml
   lib: schema/library.raml
 
 securitySchemes:
@@ -42,12 +45,6 @@ securitySchemes:
         body:
           type: array
           items: lib.StatusResponse
-      401:
-        body:
-          type: error.Unauthorized
-      500:
-        body:
-          type: error.Server
   post:
     displayName: Start User Dataset Upload
     securedBy: header-auth
@@ -60,18 +57,6 @@ securitySchemes:
       200:
         body:
           type: lib.PrepResponse
-      400:
-        body:
-          type: error.BadRequest
-      401:
-        body:
-          type: error.Unauthorized
-      422:
-        body:
-          type: error.UnprocessableEntity
-      500:
-        body:
-          type: error.Server
 
   /{jobId}:
     uriParameters:
@@ -85,18 +70,6 @@ securitySchemes:
       displayName: Delete Job
       responses:
         204:
-          body:
-            text/plain:
-              type: string
-        401:
-          body:
-            type: error.Unauthorized
-        404:
-          body:
-            type: error.NotFound
-        500:
-          body:
-            type: error.Server
 
     get:
       displayName: Lookup Job
@@ -106,15 +79,6 @@ securitySchemes:
         200:
           body:
             type: lib.StatusResponse
-        401:
-          body:
-            type: error.Unauthorized
-        404:
-          body:
-            type: error.NotFound
-        500:
-          body:
-            type: error.Server
 
     post:
       displayName: Upload Job Data
@@ -133,18 +97,6 @@ securitySchemes:
         200:
           body:
             type: lib.ProcessResponse
-        400:
-          body:
-            type: error.BadRequest
-        401:
-          body:
-            type: error.Unauthorized
-        404:
-          body:
-            type: error.NotFound
-        500:
-          body:
-            type: error.Server
 
 /projects:
   displayName: List Projects
@@ -171,9 +123,6 @@ securitySchemes:
         200:
           body:
             type: array
-        404:
-          body:
-            type: error.NotFound
 
     /{dsType}/fileTypes:
       uriParameters:
@@ -189,6 +138,3 @@ securitySchemes:
           200:
             body:
               type: array
-          404:
-            body:
-              type: error.NotFound

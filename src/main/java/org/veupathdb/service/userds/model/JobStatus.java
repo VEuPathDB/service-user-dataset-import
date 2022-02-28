@@ -62,4 +62,14 @@ public enum JobStatus
       .filter(v -> v.name.equals(name))
       .findAny();
   }
+
+  public org.veupathdb.service.userds.generated.model.JobStatus toApiStatus() {
+    for (org.veupathdb.service.userds.generated.model.JobStatus status :
+        org.veupathdb.service.userds.generated.model.JobStatus.values()) {
+      if (status.getValue().equals(name)) {
+        return status;
+      }
+    }
+    throw new IllegalStateException("External API JobStatus enum does not match internal JobStatus enum [missing " + name + "]");
+  }
 }

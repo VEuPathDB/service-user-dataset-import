@@ -11,15 +11,15 @@ import java.util.Map;
     as = UserDatasetsJobIdPostMultipartFormDataImpl.class
 )
 public interface UserDatasetsJobIdPostMultipartFormData {
-  @JsonAnyGetter
-  Map<String, Object> getAdditionalProperties();
-
-  @JsonAnySetter
-  void setAdditionalProperties(String key, Object value);
-
   @JsonProperty("file")
   File getFile();
 
   @JsonProperty("file")
   void setFile(File file);
+
+  @JsonAnyGetter
+  Map<String, Object> getAdditionalProperties();
+
+  @JsonAnySetter
+  void setAdditionalProperties(String key, Object value);
 }

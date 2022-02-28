@@ -1,95 +1,95 @@
 package org.veupathdb.service.userds.generated.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import org.veupathdb.service.userds.model.handler.DatasetOrigin;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+    "datasetName",
+    "datasetType",
+    "description",
+    "summary",
+    "projects",
+    "datasetOrigin"
+})
 public class PrepRequestImpl implements PrepRequest {
+  @JsonProperty("datasetName")
   private String datasetName;
 
+  @JsonProperty("datasetType")
+  private DatasetType datasetType;
+
+  @JsonProperty("description")
   private String description;
 
+  @JsonProperty("summary")
   private String summary;
 
+  @JsonProperty("projects")
   private List<String> projects;
 
-  private String dsType;
+  @JsonProperty("datasetOrigin")
+  private DatasetOrigin datasetOrigin;
 
-  private DatasetOrigin origin;
-
-  @Override
-  @JsonGetter
+  @JsonProperty("datasetName")
   public String getDatasetName() {
     return this.datasetName;
   }
 
-  @Override
-  @JsonSetter
+  @JsonProperty("datasetName")
   public void setDatasetName(String datasetName) {
     this.datasetName = datasetName;
   }
 
-  @Override
-  @JsonGetter
+  @JsonProperty("datasetType")
+  public DatasetType getDatasetType() {
+    return this.datasetType;
+  }
+
+  @JsonProperty("datasetType")
+  public void setDatasetType(DatasetType datasetType) {
+    this.datasetType = datasetType;
+  }
+
+  @JsonProperty("description")
   public String getDescription() {
     return this.description;
   }
 
-  @Override
-  @JsonSetter
+  @JsonProperty("description")
   public void setDescription(String description) {
     this.description = description;
   }
 
-  @Override
-  @JsonGetter
+  @JsonProperty("summary")
   public String getSummary() {
     return this.summary;
   }
 
-  @Override
-  @JsonSetter
+  @JsonProperty("summary")
   public void setSummary(String summary) {
     this.summary = summary;
   }
 
-  @Override
-  @JsonGetter
+  @JsonProperty("projects")
   public List<String> getProjects() {
     return this.projects;
   }
 
-  @Override
-  @JsonSetter
+  @JsonProperty("projects")
   public void setProjects(List<String> projects) {
     this.projects = projects;
   }
 
-  @Override
-  @JsonGetter
-  public String getDatasetType() {
-    return dsType;
+  @JsonProperty("datasetOrigin")
+  public DatasetOrigin getDatasetOrigin() {
+    return this.datasetOrigin;
   }
 
-  @Override
-  @JsonSetter
-  public void setDatasetType(String dsType) {
-    this.dsType = dsType;
-  }
-
-  @Override
-  @JsonGetter
-  public DatasetOrigin getOrigin() {
-    return origin;
-  }
-
-  @Override
-  @JsonSetter
-  public void setOrigin(DatasetOrigin origin) {
-    this.origin = origin;
+  @JsonProperty("datasetOrigin")
+  public void setDatasetOrigin(DatasetOrigin datasetOrigin) {
+    this.datasetOrigin = datasetOrigin;
   }
 }
