@@ -3,7 +3,7 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:latest AS prep
+FROM veupathdb/alpine-dev-base:jdk-15 AS prep
 
 LABEL service="user-dataset-import"
 
@@ -50,7 +50,7 @@ RUN make jar
 #   Run the service
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM foxcapades/alpine-oracle:1.3
+FROM foxcapades/alpine-oracle:1.6
 
 LABEL service="user-dataset-import"
 
