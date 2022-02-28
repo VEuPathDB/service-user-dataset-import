@@ -1,7 +1,13 @@
-val jersey  = "2.+"
-val jackson = "2.+"
-val junit   = "5.+"
-val log4j   = "2.+"
+//
+// Version Numbers
+//
+val coreLib   = "5.6.1"  // Container core lib version
+
+val jersey    = "2.33"   // Jersey/JaxRS version
+val jackson   = "2.12.2" // FasterXML Jackson version
+val junit     = "5.7.1"  // JUnit version
+val log4j     = "2.16.0" // Log4J version
+val metrics   = "0.9.0"  // Prometheus lib version
 
 val implementation by configurations
 val runtimeOnly    by configurations
@@ -10,14 +16,6 @@ val testImplementation by configurations
 val testRuntimeOnly    by configurations
 
 val annotationProcessor by configurations
-
-repositories {
-  jcenter()
-  mavenCentral()
-  maven {
-    url = uri("https://raw.githubusercontent.com/DICE-UNC/DICE-Maven/master/releases")
-  }
-}
 
 dependencies {
 
@@ -64,7 +62,7 @@ dependencies {
   implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
 
   // Core lib, prefers local checkout if available
-  implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:2.3.1")
+  implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:${coreLib}")
 
   // Jersey
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jersey}")

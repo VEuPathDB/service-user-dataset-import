@@ -6,21 +6,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonTypeName("server-error")
+@JsonTypeName("forbidden")
 @JsonPropertyOrder({
     "status",
-    "message",
-    "requestId"
+    "message"
 })
-public class ServerErrorImpl implements ServerError {
+public class ForbiddenErrorImpl implements ForbiddenError {
   @JsonProperty("status")
   private final ErrorType status = _DISCRIMINATOR_TYPE_NAME;
 
   @JsonProperty("message")
   private String message;
-
-  @JsonProperty("requestId")
-  private String requestId;
 
   @JsonProperty("status")
   public ErrorType getStatus() {
@@ -35,15 +31,5 @@ public class ServerErrorImpl implements ServerError {
   @JsonProperty("message")
   public void setMessage(String message) {
     this.message = message;
-  }
-
-  @JsonProperty("requestId")
-  public String getRequestId() {
-    return this.requestId;
-  }
-
-  @JsonProperty("requestId")
-  public void setRequestId(String requestId) {
-    this.requestId = requestId;
   }
 }

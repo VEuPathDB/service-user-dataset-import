@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ExcludingMap extends HashMap<String, Object> {
-  Set<Pattern> additionalProperties = new HashSet <>();
+  Set<Pattern> additionalProperties =  new HashSet<Pattern>();
 
   @Override
   public Object put(String key, Object value) {
@@ -35,6 +35,9 @@ public class ExcludingMap extends HashMap<String, Object> {
     }
   }
 
+  protected void addAcceptedPattern(Pattern pattern) {
+    additionalProperties.add(pattern);
+  }
 
   private Object setProperty(String key, Object value) {
     if ( additionalProperties.size() == 0 )  {

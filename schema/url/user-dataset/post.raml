@@ -4,6 +4,9 @@ uses:
   common: ../../common.raml
 
 types:
+  DatasetType:
+    type: string
+    enum: ['biom']
   PrepRequest:
     additionalProperties: false
     properties:
@@ -12,9 +15,7 @@ types:
         type: string
       datasetType:
         description: Type of the dataset job.
-        type: string
-        enum:
-        - biom
+        type: DatasetType
       description:
         description: Optional description for the user dataset.
         type: string
@@ -28,7 +29,7 @@ types:
         type: array
         minItems: 1
         items: common.ProjectType
-      origin:
+      datasetOrigin:
         description: Dataset origin, either `galaxy` or `direct-upload`.
         type: common.DatasetOrigin
         required: false
@@ -37,8 +38,7 @@ types:
     properties:
       status:
         type: string
-        enum:
-          - ok
+        enum: ['ok']
       jobId: string
   ProcessResponse:
     additionalProperties: false
@@ -46,6 +46,5 @@ types:
       status:
         description: Upload completion status
         type: string
-        enum:
-          - ok
+        enum: ['ok']
         default: ok

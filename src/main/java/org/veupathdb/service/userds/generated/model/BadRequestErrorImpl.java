@@ -7,17 +7,19 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeName("bad-request")
-@JsonPropertyOrder({"status", "message"})
-public class BadRequestErrorImpl implements BadRequestError
-{
+@JsonPropertyOrder({
+    "status",
+    "message"
+})
+public class BadRequestErrorImpl implements BadRequestError {
   @JsonProperty("status")
-  private final String status = _DISCRIMINATOR_TYPE_NAME;
+  private final ErrorType status = _DISCRIMINATOR_TYPE_NAME;
 
   @JsonProperty("message")
   private String message;
 
   @JsonProperty("status")
-  public String getStatus() {
+  public ErrorType getStatus() {
     return this.status;
   }
 

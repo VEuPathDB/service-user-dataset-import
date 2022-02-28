@@ -6,29 +6,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder("errors")
 public class ValidationErrorsImpl implements ValidationErrors {
-
   @JsonProperty("errors")
-  private final ValidationErrors.ErrorsType errors;
+  private ValidationErrors.ErrorsType errors;
 
   @JsonIgnore
-  private final Map<String, Object> additionalProperties;
-
-  public ValidationErrorsImpl() {
-    errors = new ErrorsTypeImpl();
-    additionalProperties = new ExcludingMap();
-  }
+  private Map<String, Object> additionalProperties = new ExcludingMap();
 
   @JsonProperty("errors")
   public ValidationErrors.ErrorsType getErrors() {
     return this.errors;
+  }
+
+  @JsonProperty("errors")
+  public void setErrors(ValidationErrors.ErrorsType errors) {
+    this.errors = errors;
   }
 
   @JsonAnyGetter
@@ -42,18 +39,16 @@ public class ValidationErrorsImpl implements ValidationErrors {
   }
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @JsonPropertyOrder({"general", "byKey"})
+  @JsonPropertyOrder({
+      "general",
+      "byKey"
+  })
   public static class ErrorsTypeImpl implements ValidationErrors.ErrorsType {
     @JsonProperty("general")
     private List<String> general;
 
     @JsonProperty("byKey")
     private ValidationErrors.ErrorsType.ByKeyType byKey;
-
-    public ErrorsTypeImpl() {
-      this.general = new ArrayList <>();
-      this.byKey = new ByKeyTypeImpl();
-    }
 
     @JsonProperty("general")
     public List<String> getGeneral() {

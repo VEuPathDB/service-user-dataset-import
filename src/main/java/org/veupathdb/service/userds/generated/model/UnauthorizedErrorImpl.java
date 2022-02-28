@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 })
 public class UnauthorizedErrorImpl implements UnauthorizedError {
   @JsonProperty("status")
-  private final String status = _DISCRIMINATOR_TYPE_NAME;
+  private final ErrorType status = _DISCRIMINATOR_TYPE_NAME;
 
   @JsonProperty("message")
   private String message;
 
   @JsonProperty("status")
-  public String getStatus() {
+  public ErrorType getStatus() {
     return this.status;
   }
 
