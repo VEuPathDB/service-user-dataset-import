@@ -7,6 +7,9 @@ FROM veupathdb/alpine-dev-base:jdk-15 AS prep
 
 LABEL service="user-dataset-import"
 
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
+
 WORKDIR /workspace
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
        --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss \
