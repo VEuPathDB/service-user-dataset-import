@@ -10,6 +10,7 @@ node('centos8') {
 
   builder.gitClone()
   builder.buildContainers([
-    [ name: 'user-dataset-import-service' ]
+    [ name: 'user-dataset-import-service' ],
+    [ name: 'user-dataset-import-datastore', dockerfile: "pgDockerfile"]
   ])
 }
