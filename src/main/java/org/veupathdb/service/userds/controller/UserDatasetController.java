@@ -2,8 +2,6 @@ package org.veupathdb.service.userds.controller;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.util.stream.Collectors;
 import javax.ws.rs.BadRequestException;
