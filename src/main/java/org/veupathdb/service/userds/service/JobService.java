@@ -1,16 +1,20 @@
 package org.veupathdb.service.userds.service;
 
+import com.devskiller.friendly_id.FriendlyId;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.sql.Date;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.devskiller.friendly_id.FriendlyId;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.veupathdb.service.userds.Main;
-import org.veupathdb.service.userds.generated.model.*;
+import org.veupathdb.service.userds.generated.model.JobError;
+import org.veupathdb.service.userds.generated.model.JobErrorImpl;
+import org.veupathdb.service.userds.generated.model.PrepRequest;
+import org.veupathdb.service.userds.generated.model.StatusResponse;
+import org.veupathdb.service.userds.generated.model.StatusResponseImpl;
+import org.veupathdb.service.userds.generated.model.ValidationErrorsImpl;
 import org.veupathdb.service.userds.model.JobRow;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.MetaValidationResult;
@@ -22,7 +26,6 @@ import org.veupathdb.service.userds.repo.SelectJobQuery;
 import org.veupathdb.service.userds.repo.SelectJobsQuery;
 
 import static java.util.Collections.singletonList;
-import static org.veupathdb.service.userds.generated.model.PrepRequest.*;
 
 public class JobService
 {

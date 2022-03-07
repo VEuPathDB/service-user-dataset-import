@@ -11,6 +11,18 @@ import java.util.Map;
     as = UserDatasetsJobIdPostMultipartFormDataImpl.class
 )
 public interface UserDatasetsJobIdPostMultipartFormData {
+  @JsonProperty("uploadMethod")
+  UploadMethodType getUploadMethod();
+
+  @JsonProperty("uploadMethod")
+  void setUploadMethod(UploadMethodType uploadMethod);
+
+  @JsonProperty("url")
+  String getUrl();
+
+  @JsonProperty("url")
+  void setUrl(String url);
+
   @JsonProperty("file")
   File getFile();
 
@@ -22,4 +34,19 @@ public interface UserDatasetsJobIdPostMultipartFormData {
 
   @JsonAnySetter
   void setAdditionalProperties(String key, Object value);
+
+  enum UploadMethodType {
+    @JsonProperty("url")
+    URL("url"),
+
+    @JsonProperty("file")
+    FILE("file");
+
+    private String name;
+
+    UploadMethodType(String name) {
+      this.name = name;
+    }
+    public String getValue(){ return name; } 
+}
 }

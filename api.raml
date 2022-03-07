@@ -92,7 +92,11 @@ securitySchemes:
         multipart/form-data:
           type: object
           properties:
-            file: file
+            uploadMethod:
+              type: string
+              enum: [ 'url', 'file' ]
+            url?: string
+            file?: file
       responses:
         200:
           body:
