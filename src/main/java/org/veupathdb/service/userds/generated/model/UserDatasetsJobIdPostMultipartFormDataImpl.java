@@ -10,13 +10,44 @@ import java.io.File;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("file")
+@JsonPropertyOrder({
+    "uploadMethod",
+    "url",
+    "file"
+})
 public class UserDatasetsJobIdPostMultipartFormDataImpl implements UserDatasetsJobIdPostMultipartFormData {
+  @JsonProperty("uploadMethod")
+  private UserDatasetsJobIdPostMultipartFormData.UploadMethodType uploadMethod;
+
+  @JsonProperty("url")
+  private String url;
+
   @JsonProperty("file")
   private File file;
 
   @JsonIgnore
   private Map<String, Object> additionalProperties = new ExcludingMap();
+
+  @JsonProperty("uploadMethod")
+  public UserDatasetsJobIdPostMultipartFormData.UploadMethodType getUploadMethod() {
+    return this.uploadMethod;
+  }
+
+  @JsonProperty("uploadMethod")
+  public void setUploadMethod(
+      UserDatasetsJobIdPostMultipartFormData.UploadMethodType uploadMethod) {
+    this.uploadMethod = uploadMethod;
+  }
+
+  @JsonProperty("url")
+  public String getUrl() {
+    return this.url;
+  }
+
+  @JsonProperty("url")
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
   @JsonProperty("file")
   public File getFile() {

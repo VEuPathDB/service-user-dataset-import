@@ -2,6 +2,7 @@ package org.veupathdb.service.userds.controller;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.stream.Collectors;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -28,8 +29,6 @@ import org.veupathdb.service.userds.repo.SelectJobsQuery;
 import org.veupathdb.service.userds.service.Importer;
 import org.veupathdb.service.userds.service.JobService;
 import org.veupathdb.service.userds.service.ThreadProvider;
-import org.veupathdb.service.userds.util.ErrFac;
-import org.veupathdb.service.userds.util.Errors;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
 import org.veupathdb.service.userds.util.http.Header;
 
@@ -149,7 +148,10 @@ public class UserDatasetController implements UserDatasets
 
   @Override
   public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(String jobId, UserDatasetsJobIdPostMultipartFormData entity) {
-    try (InputStream file = new FileInputStream(entity.getFile())){
+    try (InputStream file = switch(entity.getUploadMethod()) {
+      case FILE -> new FileInputStream(entity.getFile());
+      case URL -> new URL(entity.getUrl()).openStream();
+    }) {
       var job = getJobByToken(jobId)
         .orElseThrow(NotFoundException::new);
 
