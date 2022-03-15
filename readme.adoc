@@ -5,6 +5,139 @@ https://veupathdb.github.io/service-user-dataset-import/api.html[API Docs]
 HTTP service that allows users to upload datasets directly to a site,
 skipping Galaxy entirely.
 
+== Adding a New Handler
+
+New handlers can be added to the udis stack by editing the
+https://github.com/VEuPathDB/service-user-dataset-import/blob/master/docker-compose.yml[docker-compose.yml]
+file and the
+https://github.com/VEuPathDB/service-user-dataset-import/blob/master/config.json[config.json]
+file with the new handler configuration.
+
+The `docker-compose.yml` file puts the new image on the internal docker network
+so the import service can access it, and the `config.json` file tells the import
+service how to access it.
+
+=== Prerequisites
+
+Before a new handler can be added, it must first be registered in Jenkins and
+have a built image published to the https://hub.docker.com/u/veupathdb[VEuPathDB Dockerhub].
+
+=== `docker-compose.yml`
+
+To add the new handler to the docker-compose file, copy/paste one of the
+existing handler entries and edit it to suit your new handler.
+
+.Original Config
+[source, yml]
+----
+  biom-handler: <1>
+    image: veupathdb/user-dataset-handler-biom:${BIOME_HANDLER_TAG:-latest} <2>
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}" <3>
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+----
+<1> The internal network name of the handler.  This value must be unique and contain only URL safe characters.
+<2> The docker image name and version env-var
+<3> The watchtower name and version-env-var
+
+To create a new handler in the stack, edit your copy like so:
+
+.Edited Config
+[source, yml]
+----
+  biom-handler:
+    image: veupathdb/user-dataset-handler-biom:${BIOME_HANDLER_TAG:-latest}
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}"
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+
+  my-new-handler: <1>
+    image: veupathdb/user-dataset-handler-my-new-handler:${MY_NEW_HANDLER_TAG:-latest} <2>
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${MY_NEW_HANDLER_WATCHTOWER:-false}" <3>
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+----
+<1> New handler network name
+<2> Updated docker-image name and version env-var.
+<3> Updated watchtower env-var.
+
+After this change is made and committed, Ops will need to be notified of the
+change so they can update the deployment configuration on their end.
+
+
+=== `config.json`
+
+Similar to the docker-compose file, the easiest way to add a new service
+configuration is to copy an existing one and append it to the `services` array.
+
+.Original Config
+[source, json]
+----
+{
+  "services": [
+    {
+      "dsType": "biom", <1>
+      "projects": [
+        "MicrobiomeDB" <2>
+      ],
+      "fileTypes": [
+        "biom" <3>
+      ],
+      "name": "biom-handler" <4>
+    }
+  ]
+}
+----
+<1> Value that will be sent by the client to select your handler for use with
+    the upload.
+<2> List of projects your handler is allowed to be used from.
+<3> File types/extensions allowed to be handled by your handler.  In addition to
+    the file types listed here, zip and tar files are also permitted by default.
+<4> The network name for your handler as configured in the `docker-compose.yml`
+    file.
+
+.Edited Config
+[source, json]
+----
+{
+  "services": [
+    {
+      "dsType": "biom",
+      "projects": [
+        "MicrobiomeDB"
+      ],
+      "fileTypes": [
+        "biom"
+      ],
+      "name": "biom-handler"
+    },
+    {
+      "dsType": "mine",
+      "projects": [
+        "PlasmoDB",
+        "FungiDB"
+      ],
+      "fileTypes": [
+        "myfile"
+      ],
+      "name": "my-new-handler"
+    }
+  ]
+}
+----
+
 == In this repo
 
 For base contents and explanations see the
