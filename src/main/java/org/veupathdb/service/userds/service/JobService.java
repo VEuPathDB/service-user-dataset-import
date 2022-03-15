@@ -93,7 +93,7 @@ public class JobService
       out.getByKey().put("projects", projects);
     }
 
-    var type = validateTypeKey(req.getDatasetType().getValue(), req);
+    var type = validateTypeKey(req.getDatasetType(), req);
     if (!type.isEmpty()) {
       out.getByKey().put("datasetType", type);
     }
@@ -166,7 +166,7 @@ public class JobService
   public static JobRow prepToJob(PrepRequest body, String jobId, long userId) {
     return new JobRow(jobId, userId, JobStatus.AWAITING_UPLOAD,
       body.getDatasetName(), body.getDescription(), body.getSummary(),
-      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getDatasetOrigin()), body.getDatasetType().getValue());
+      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getDatasetOrigin()), body.getDatasetType());
   }
 
   /**

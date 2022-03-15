@@ -42,7 +42,7 @@ public class Importer implements Runnable
   public void run() {
     log.trace("Importer#run");
     try {
-      final var hand = Handler.getHandler("biom").orElseThrow();
+      final var hand = Handler.getHandler(job.getType()).orElseThrow();
 
       if (!doPrep(hand))
         return;

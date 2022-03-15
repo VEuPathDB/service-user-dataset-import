@@ -15,10 +15,10 @@ public interface PrepRequest {
   void setDatasetName(String datasetName);
 
   @JsonProperty("datasetType")
-  DatasetType getDatasetType();
+  String getDatasetType();
 
   @JsonProperty("datasetType")
-  void setDatasetType(DatasetType datasetType);
+  void setDatasetType(String datasetType);
 
   @JsonProperty("description")
   String getDescription();

@@ -7,6 +7,23 @@
 ################################################################################
 
 types:
+  ProjectType: string
+  JobStatus:
+    type: string
+    enum:
+      - sending-to-handler
+      - handler-unpacking
+      - handler-processing
+      - handler-packing
+      - sending-to-datastore
+      - success
+      - rejected
+      - errored
+  DatasetOrigin:
+    type: string
+    enum:
+      - galaxy
+      - direct-upload
   StatusResponse:
     type: object
     additionalProperties: false
@@ -53,10 +70,7 @@ types:
     type: object
     properties:
       message: string
-  DatasetType:
-    type: string
-    enum:
-      - biom
+  DatasetType: string
   PrepRequest:
     type: object
     additionalProperties: false
@@ -103,21 +117,4 @@ types:
         default: ok
         enum:
           - ok
-  ProjectType: string
-  JobStatus:
-    type: string
-    enum:
-      - sending-to-handler
-      - handler-unpacking
-      - handler-processing
-      - handler-packing
-      - sending-to-datastore
-      - success
-      - rejected
-      - errored
-  DatasetOrigin:
-    type: string
-    enum:
-      - galaxy
-      - direct-upload
 

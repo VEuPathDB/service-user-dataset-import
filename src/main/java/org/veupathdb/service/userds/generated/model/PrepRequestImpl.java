@@ -19,7 +19,7 @@ public class PrepRequestImpl implements PrepRequest {
   private String datasetName;
 
   @JsonProperty("datasetType")
-  private DatasetType datasetType;
+  private String datasetType;
 
   @JsonProperty("description")
   private String description;
@@ -44,12 +44,12 @@ public class PrepRequestImpl implements PrepRequest {
   }
 
   @JsonProperty("datasetType")
-  public DatasetType getDatasetType() {
+  public String getDatasetType() {
     return this.datasetType;
   }
 
   @JsonProperty("datasetType")
-  public void setDatasetType(DatasetType datasetType) {
+  public void setDatasetType(String datasetType) {
     this.datasetType = datasetType;
   }
 
