@@ -12,7 +12,7 @@ import java.util.List;
     "description",
     "summary",
     "projects",
-    "datasetOrigin"
+    "origin"
 })
 public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("datasetName")
@@ -30,8 +30,8 @@ public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("projects")
   private List<String> projects;
 
-  @JsonProperty("datasetOrigin")
-  private DatasetOrigin datasetOrigin;
+  @JsonProperty("origin")
+  private DatasetOrigin origin;
 
   @JsonProperty("datasetName")
   public String getDatasetName() {
@@ -83,13 +83,13 @@ public class PrepRequestImpl implements PrepRequest {
     this.projects = projects;
   }
 
-  @JsonProperty("datasetOrigin")
-  public DatasetOrigin getDatasetOrigin() {
-    return this.datasetOrigin;
+  @JsonProperty("origin")
+  public DatasetOrigin getOrigin() {
+    return this.origin;
   }
 
-  @JsonProperty("datasetOrigin")
-  public void setDatasetOrigin(DatasetOrigin datasetOrigin) {
-    this.datasetOrigin = datasetOrigin;
+  @JsonProperty("origin")
+  public void setOrigin(DatasetOrigin origin) {
+    this.origin = origin;
   }
 }

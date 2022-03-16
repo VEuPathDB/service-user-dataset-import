@@ -38,9 +38,9 @@ public interface PrepRequest {
   @JsonProperty("projects")
   void setProjects(List<String> projects);
 
-  @JsonProperty("datasetOrigin")
-  DatasetOrigin getDatasetOrigin();
+  @JsonProperty("origin")
+  DatasetOrigin getOrigin();
 
-  @JsonProperty("datasetOrigin")
-  void setDatasetOrigin(DatasetOrigin datasetOrigin);
+  @JsonProperty("origin")
+  void setOrigin(DatasetOrigin origin);
 }
