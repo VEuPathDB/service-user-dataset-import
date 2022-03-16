@@ -166,7 +166,7 @@ public class JobService
   public static JobRow prepToJob(PrepRequest body, String jobId, long userId) {
     return new JobRow(jobId, userId, JobStatus.AWAITING_UPLOAD,
       body.getDatasetName(), body.getDescription(), body.getSummary(),
-      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getDatasetOrigin()), body.getDatasetType());
+      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getOrigin()), body.getDatasetType());
   }
 
   /**
