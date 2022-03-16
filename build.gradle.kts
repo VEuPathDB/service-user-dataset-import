@@ -56,15 +56,15 @@ dependencies {
   ))
 
   // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.16.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.17.1")
 
   // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.+")
-  runtimeOnly("org.json:json:20190722")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.12.2")
-  runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names:2.12.2")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.2")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.2")
+  runtimeOnly("org.apache.commons:commons-dbcp2:2.9.0")
+  runtimeOnly("org.json:json:20211205")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.13.2")
+  runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.2")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.2")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
 
   //
   // Project Dependencies
@@ -109,8 +109,8 @@ dependencies {
   implementation("io.prometheus:simpleclient_common:0.15.0")
 
   // CLI
-  implementation("info.picocli:picocli:4.2.0")
-  annotationProcessor("info.picocli:picocli-codegen:4.2.0")
+  implementation("info.picocli:picocli:4.6.3")
+  annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
   // Utils
   implementation("io.vulpine.lib:Jackfish:1.1.0")
