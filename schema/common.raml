@@ -24,7 +24,16 @@ types:
 
   JobStatus:
     type: string
-    enum: ['sending-to-handler','handler-unpacking','handler-processing','handler-packing','sending-to-datastore','success','rejected','errored']
+    enum:
+    - 'sending-to-handler'
+    - 'handler-unpacking'
+    - 'handler-processing'
+    - 'handler-packing'
+    - 'sending-to-datastore'
+    - 'success'
+    - 'rejected'
+    - 'errored'
+    - 'awaiting-upload'
 
   DatasetOrigin:
     type: string

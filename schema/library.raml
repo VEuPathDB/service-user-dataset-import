@@ -7,6 +7,52 @@
 ################################################################################
 
 types:
+  StatusResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      id: string
+      datasetName: string
+      description?: string
+      summary?: string
+      datasetId?:
+        description: |
+          iRODS given dataset ID that will be present only if the job completed
+          successfully.
+        type: integer
+        minimum: 0
+      projects:
+        type: array
+        items: ProjectType
+      status: JobStatus
+      statusDetails:
+        description: |
+          Optional property containing additional details about the job status.
+
+          Will contain error messages, warnings, or validation failure reasons.
+        type: ValidationErrors | JobError
+        required: false
+      origin: DatasetOrigin
+      started: datetime
+      finished?: datetime
+  ValidationErrors:
+    type: object
+    properties:
+      errors:
+        type: object
+        additionalProperties: false
+        properties:
+          general:
+            type: array
+            items: string
+          byKey:
+            type: object
+            properties:
+              //: string
+  JobError:
+    type: object
+    properties:
+      message: string
   DatasetType: string
   PrepRequest:
     type: object
@@ -66,55 +112,10 @@ types:
       - success
       - rejected
       - errored
+      - awaiting-upload
   DatasetOrigin:
     type: string
     enum:
       - galaxy
       - direct-upload
-  StatusResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      id: string
-      datasetName: string
-      description?: string
-      summary?: string
-      datasetId?:
-        description: |
-          iRODS given dataset ID that will be present only if the job completed
-          successfully.
-        type: integer
-        minimum: 0
-      projects:
-        type: array
-        items: ProjectType
-      status: JobStatus
-      statusDetails:
-        description: |
-          Optional property containing additional details about the job status.
-
-          Will contain error messages, warnings, or validation failure reasons.
-        type: ValidationErrors | JobError
-        required: false
-      origin: DatasetOrigin
-      started: datetime
-      finished?: datetime
-  ValidationErrors:
-    type: object
-    properties:
-      errors:
-        type: object
-        additionalProperties: false
-        properties:
-          general:
-            type: array
-            items: string
-          byKey:
-            type: object
-            properties:
-              //: string
-  JobError:
-    type: object
-    properties:
-      message: string
 
