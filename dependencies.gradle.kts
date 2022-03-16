@@ -54,7 +54,7 @@ dependencies {
   ))
 
   // Postgres
-  runtimeOnly("org.postgresql:postgresql:42.2.12")
+  implementation("org.postgresql:postgresql:42.2.12")
   implementation("com.zaxxer:HikariCP:3.4.5")
   implementation("io.vulpine.lib:sql-import:0.2.1")
 
