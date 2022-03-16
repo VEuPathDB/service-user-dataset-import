@@ -113,8 +113,8 @@ public class UserDatasetController implements UserDatasets
 
     // TODO: This field will become required when Galaxy runs imports through
     //       this service.
-    if (entity.getDatasetOrigin() == null)
-      entity.setDatasetOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
+    if (entity.getOrigin() == null)
+      entity.setOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
 
     try {
       String jobId = JobService.insertJob(entity, UserProvider.lookupUser(req).map(User::getUserID).orElseThrow());
