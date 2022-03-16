@@ -16,8 +16,8 @@ val fullPack = "${buildProps["app.package.root"]}.${buildProps["app.package.serv
 val genPack = fullPack
 
 java {
-    targetCompatibility = JavaVersion.VERSION_15
-    sourceCompatibility = JavaVersion.VERSION_15
+  targetCompatibility = JavaVersion.VERSION_15
+  sourceCompatibility = JavaVersion.VERSION_15
 }
 
 // Project settings
@@ -25,23 +25,25 @@ group = buildProps["project.group"] ?: error("empty 1")
 version = buildProps["project.version"] ?: error("empty 2")
 
 repositories {
-    mavenCentral()
-    maven {
-        name = "GitHubPackages"
-        url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-        }
+  mavenCentral()
+  maven {
+    name = "GitHubPackages"
+    url = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+    credentials {
+      username = project.findProperty("gpr.user") as String?
+        ?: System.getenv("GITHUB_USERNAME")
+      password = project.findProperty("gpr.key") as String?
+        ?: System.getenv("GITHUB_TOKEN")
     }
-    maven {
-        url = uri("https://raw.githubusercontent.com/DICE-UNC/DICE-Maven/master/releases")
-    }
+  }
+  maven {
+    url =
+      uri("https://raw.githubusercontent.com/DICE-UNC/DICE-Maven/master/releases")
+  }
 }
 
 
-
-val metrics   = "0.9.0"  // Prometheus lib version
+val metrics = "0.9.0"  // Prometheus lib version
 
 dependencies {
 
@@ -88,7 +90,8 @@ dependencies {
   implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
 
   // Core lib, prefers local checkout if available
-  implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:5.6.1")
+  implementation(findProject(":core")
+    ?: "org.veupathdb.lib:jaxrs-container-core:5.6.1")
 
   // Jersey
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.33")
@@ -136,21 +139,21 @@ tasks.register("print-gen-package") { print(genPack) }
 tasks.register("print-container-name") { print(buildProps["container.name"]) }
 
 tasks.withType<Test> {
-    testLogging {
-        events.addAll(listOf(TestLogEvent.FAILED,
-            TestLogEvent.SKIPPED,
-            TestLogEvent.STANDARD_OUT,
-            TestLogEvent.STANDARD_ERROR,
-            TestLogEvent.PASSED))
+  testLogging {
+    events.addAll(listOf(TestLogEvent.FAILED,
+      TestLogEvent.SKIPPED,
+      TestLogEvent.STANDARD_OUT,
+      TestLogEvent.STANDARD_ERROR,
+      TestLogEvent.PASSED))
 
-        exceptionFormat = TestExceptionFormat.FULL
-        showExceptions = true
-        showCauses = true
-        showStackTraces = true
-        showStandardStreams = true
-        enableAssertions = true
-    }
-    ignoreFailures = true // Always try to run all tests for all modules
+    exceptionFormat = TestExceptionFormat.FULL
+    showExceptions = true
+    showCauses = true
+    showStackTraces = true
+    showStandardStreams = true
+    enableAssertions = true
+  }
+  ignoreFailures = true // Always try to run all tests for all modules
 }
 
 val test by tasks.getting(Test::class) {
