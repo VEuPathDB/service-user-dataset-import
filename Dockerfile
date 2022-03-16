@@ -31,7 +31,6 @@ RUN make install-dev-env
 
 COPY [ \
   "build.gradle.kts", \
-  "dependencies.gradle.kts", \
   "settings.gradle.kts", \
   "service.properties", \
   "./" \
