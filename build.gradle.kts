@@ -24,6 +24,16 @@ java {
 group = buildProps["project.group"] ?: error("empty 1")
 version = buildProps["project.version"] ?: error("empty 2")
 
+containerBuild {
+  fgputil {
+    version = "4f2eb70"
+  }
+
+  project {
+    projectPackage = "org.veupathdb.service.userds"
+  }
+}
+
 repositories {
   mavenCentral()
   maven {
