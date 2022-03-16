@@ -15,10 +15,10 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
     && git config --global advice.detachedHead false
 
 RUN apk update \
-    apk add ca-certificates curl \
-    curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
-    update-ca-certificates \
-    keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore $JAVA_HOME/lib/security/cacerts
+    && apk add ca-certificates curl \
+    && curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
+    && update-ca-certificates \
+    && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore $JAVA_HOME/lib/security/cacerts
 
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
