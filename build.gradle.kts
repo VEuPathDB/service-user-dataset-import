@@ -5,6 +5,8 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
   java
+  id("org.veupathdb.lib.gradle.container.container-utils") version "3.2.0"
+  id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 // Load Props
@@ -122,33 +124,15 @@ dependencies {
   testImplementation("org.mockito:mockito-core:4.3.1")
 }
 
+tasks.shadowJar {
+  archiveBaseName.set("service")
+  archiveClassifier.set("")
+  archiveVersion.set("")
 
-
-tasks.jar {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-  manifest {
-    attributes["Main-Class"] = "${fullPack}.${buildProps["app.main-class"]}"
-    attributes["Implementation-Title"] = buildProps["project.name"]
-    attributes["Implementation-Version"] = buildProps["project.version"]
-  }
-  println("Packaging Components")
-  from(configurations.runtimeClasspath.get().map {
-    println("  " + it.name)
-
-    if (it.isDirectory) it else zipTree(it).matching {
-      exclude { f ->
-        val name = f.name.toLowerCase()
-        (name.contains("log4j") && name.contains(".dat")) ||
-          name.endsWith(".sf") ||
-          name.endsWith(".dsa") ||
-          name.endsWith(".rsa")
-      } } })
-  archiveFileName.set("service.jar")
+  exclude("**/Log4j2Plugins.dat")
 }
 
 tasks.register("print-gen-package") { print(genPack) }
-tasks.register("print-package") { print(fullPack) }
 tasks.register("print-container-name") { print(buildProps["container.name"]) }
 
 tasks.withType<Test> {
