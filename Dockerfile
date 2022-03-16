@@ -3,12 +3,9 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:jdk-15 AS prep
+FROM veupathdb/alpine-dev-base:jdk-16 AS prep
 
 LABEL service="user-dataset-import"
-
-ARG GITHUB_USERNAME
-ARG GITHUB_TOKEN
 
 WORKDIR /workspace
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
@@ -18,16 +15,17 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
     && git config --global advice.detachedHead false
 
 RUN apk update \
-    && apk add ca-certificates curl  \
-    && curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
-    && update-ca-certificates \
-    && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore /opt/jdk/lib/security/cacerts
+    apk add ca-certificates curl \
+    curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
+    update-ca-certificates \
+    keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore $JAVA_HOME/lib/security/cacerts
+
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
 
 ENV DOCKER=build
 COPY makefile gradlew ./
 COPY gradle gradle
-
-RUN make install-dev-env
 
 COPY [ \
   "build.gradle.kts", \
@@ -35,6 +33,8 @@ COPY [ \
   "service.properties", \
   "./" \
 ]
+
+RUN make install-dev-env
 
 RUN mkdir -p vendor \
     && cp -n /jdbc/* vendor \
