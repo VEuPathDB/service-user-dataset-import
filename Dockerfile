@@ -66,7 +66,7 @@ ENV JAVA_HOME=/opt/jdk \
     JVM_ARGS=""
 
 COPY --from=prep /jlinked /opt/jdk
-COPY --from=prep /opt/jdk/lib/security/cacerts /opt/jdk/lib/security/cacerts
+COPY --from=prep /usr/lib/jvm/default-jvm/lib/security/cacerts /opt/jdk/lib/security/cacerts
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
 COPY config.json .
 
