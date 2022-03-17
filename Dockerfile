@@ -41,8 +41,6 @@ RUN mkdir -p vendor \
     && echo Installing Gradle \
     && ./gradlew dependencies --info --configuration runtimeClasspath
 
-COPY api.raml .
-COPY schema schema
 COPY src src
 
 RUN make jar
