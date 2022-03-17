@@ -90,7 +90,6 @@ merge-raml:
 #
 
 build/libs/service.jar: \
-      gen-docs \
       vendor/fgputil-accountdb-1.0.0.jar \
       vendor/fgputil-cache-1.0.0.jar \
       vendor/fgputil-cli-1.0.0.jar \
