@@ -1,5 +1,7 @@
 package org.veupathdb.service.userds;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.MultiPartMediaTypes;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.userds.controller.DebugController;
@@ -31,7 +33,8 @@ public class Resources extends ContainerResources {
     return new Object[] {
       ProjectController.class,
       UserDatasetController.class,
-      DebugController.class
+      DebugController.class,
+      MultiPartFeature.class,
     };
   }
 }
