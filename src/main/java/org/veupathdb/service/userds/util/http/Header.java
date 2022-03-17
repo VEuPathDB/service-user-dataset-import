@@ -1,7 +1,7 @@
 package org.veupathdb.service.userds.util.http;
 
 import java.util.Optional;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public interface Header
 {

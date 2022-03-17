@@ -69,9 +69,6 @@ dependencies {
     "vendor/fgputil-web-1.0.0.jar"
   ))
 
-  // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.17.1")
-
   // Extra FgpUtil dependencies
   runtimeOnly("org.apache.commons:commons-dbcp2:2.9.0")
   runtimeOnly("org.json:json:20211205")
@@ -101,14 +98,14 @@ dependencies {
 
   // Core lib, prefers local checkout if available
   implementation(findProject(":core")
-    ?: "org.veupathdb.lib:jaxrs-container-core:5.6.1")
+    ?: "org.veupathdb.lib:jaxrs-container-core:6.3.2")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.33")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.33")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:2.33")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:2.33")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:2.33")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
 
   // Jackson
   implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
