@@ -1,4 +1,6 @@
 = User Dataset Import Service
+:toc:
+:icons: font
 
 https://veupathdb.github.io/service-user-dataset-import/api.html[API Docs]
 
@@ -138,7 +140,16 @@ configuration is to copy an existing one and append it to the `services` array.
 }
 ----
 
-== In this repo
+== Development
+
+=== Code Generation
+
+WARNING: Code generation is intentionally disabled in this project due to issues with
+the RAML code generation creating incorrect controller methods for handling
+`multipart/form-data` inputs.
+
+
+=== In this repo
 
 For base contents and explanations see the
 https://github.com/VEuPathDB/example-jaxrs-container-service[template project].

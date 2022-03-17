@@ -1,5 +1,6 @@
 package org.veupathdb.service.userds.generated.resources;
 
+import java.io.InputStream;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,6 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.userds.generated.model.PrepRequest;
 import org.veupathdb.service.userds.generated.model.PrepResponse;
 import org.veupathdb.service.userds.generated.model.ProcessResponse;
@@ -44,8 +47,12 @@ public interface UserDatasets {
   @Path("/{jobId}")
   @Produces("application/json")
   @Consumes("multipart/form-data")
-  PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(@PathParam("jobId") String jobId,
-      UserDatasetsJobIdPostMultipartFormData entity);
+  PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
+    @PathParam("jobId")            String      jobId,
+    @FormDataParam("uploadMethod") String      uploadMethod,
+    @FormDataParam("file")         InputStream file,
+    @FormDataParam("url")          String      url
+  );
 
   class GetUserDatasetsResponse extends ResponseDelegate {
     private GetUserDatasetsResponse(Response response, Object entity) {

@@ -3,6 +3,8 @@ package org.veupathdb.service.userds.controller;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -147,10 +149,19 @@ public class UserDatasetController implements UserDatasets
   }
 
   @Override
-  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(String jobId, UserDatasetsJobIdPostMultipartFormData entity) {
-    try (InputStream file = switch(entity.getUploadMethod()) {
-      case FILE -> new FileInputStream(entity.getFile());
-      case URL -> new URL(entity.getUrl()).openStream();
+  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
+    String      jobId,
+    String      uploadType,
+    InputStream file,
+    String      url
+  ) {
+    try (InputStream stream = switch(uploadType) {
+      case "file" -> file;
+      case "url"  -> new URL(url).openStream();
+      default     -> throw new UnprocessableEntityException(Map.of(
+        "uploadType",
+        List.of("Invalid upload type, must be one of \"file\" or \"url\"")
+      ));
     }) {
       var job = getJobByToken(jobId)
         .orElseThrow(NotFoundException::new);
@@ -167,7 +178,7 @@ public class UserDatasetController implements UserDatasets
         ThreadProvider.newThread(new Importer(
           job,
           bound,
-          new InputStreamNotifier(file, lock)
+          new InputStreamNotifier(stream, lock)
         )).start();
         lock.wait();
       }

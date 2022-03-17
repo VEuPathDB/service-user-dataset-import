@@ -42,11 +42,11 @@ default:
 	@echo ""
 
 .PHONY: compile
-compile: install-dev-env gen-jaxrs gen-docs
+compile: install-dev-env gen-docs
 	@./gradlew clean compileJava
 
 .PHONY: test
-test: install-dev-env gen-jaxrs gen-docs
+test: install-dev-env gen-docs
 	@./gradlew clean test
 
 .PHONY: jar
@@ -79,11 +79,6 @@ fix-path:
 	@$(BIN_DIR)/fix-path.sh $(MAIN_DIR)
 	@$(BIN_DIR)/fix-path.sh $(TEST_DIR)
 
-gen-jaxrs: api.raml merge-raml
-	@$(BIN_DIR)/generate-jaxrs.sh $(GEN_PACKAGE)
-	@$(BIN_DIR)/generate-jaxrs-streams.sh $(GEN_PACKAGE)
-	@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(GEN_PACKAGE)
-
 gen-docs: api.raml merge-raml
 	@$(BIN_DIR)/generate-docs.sh
 
@@ -95,7 +90,6 @@ merge-raml:
 #
 
 build/libs/service.jar: \
-      gen-jaxrs \
       gen-docs \
       vendor/fgputil-accountdb-1.0.0.jar \
       vendor/fgputil-cache-1.0.0.jar \
