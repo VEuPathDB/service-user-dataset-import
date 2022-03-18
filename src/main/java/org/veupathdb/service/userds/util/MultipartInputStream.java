@@ -34,12 +34,12 @@ public class MultipartInputStream extends InputStream {
   }
 
   private static String makeBoundary() {
-    return String.format("----%s\n", UUID.randomUUID());
+    return String.format("----%s", UUID.randomUUID());
   }
 
   private static String makeDisposition(String fileName) {
     return String.format(
-      "Content-Disposition: form-data; name=\"file\"; filename=\"%s\"",
+      "Content-Disposition: form-data; name=\"file\"; filename=\"%s\"\n",
       fileName
     );
   }

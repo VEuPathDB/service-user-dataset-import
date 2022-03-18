@@ -17,11 +17,11 @@ class MultipartInputStreamTest {
       new StringInputStream("and mashed potatoes")
     );
 
-    var bound = tgt.getBoundary();
+    var bound = "--" + tgt.getBoundary();
 
     assertEquals(
       bound
-        + "Content-Disposition: form-data; name=\"file\"; filename=\"gravy\"\n"
+        + "\nContent-Disposition: form-data; name=\"file\"; filename=\"gravy\"\n"
         + "Content-Type: application/octet-stream\n\n"
         + "and mashed potatoes\n"
         + bound,

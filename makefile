@@ -1,9 +1,5 @@
 BIN_DIR := .tools/bin
 
-C_BLUE := "\\033[94m"
-C_NONE := "\\033[0m"
-C_CYAN := "\\033[36m"
-
 .PHONY: compile
 compile: install-dev-env
 	@./gradlew clean compileJava
@@ -31,10 +27,6 @@ install-dev-env:
 	@$(BIN_DIR)/check-env.sh
 	@$(BIN_DIR)/install-oracle.sh
 
-#
-# File based targets
-#
-
 build/libs/service.jar: build.gradle.kts service.properties
-	@echo "$(C_BLUE)Building application jar$(C_NONE)"
+	@echo "Building application jar"
 	@./gradlew clean test shadowJar
