@@ -37,7 +37,9 @@ COPY [ \
 RUN make install-dev-env
 
 RUN mkdir -p vendor \
-    && cp -n /jdbc/* vendor
+    && cp -n /jdbc/* vendor \
+    && echo Installing Gradle \
+    && ./gradlew dependencies --info --configuration runtimeClasspath
 
 COPY src src
 

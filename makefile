@@ -25,8 +25,32 @@ install-dev-env:
 		cd .tools && git pull && cd ..; \
 	fi
 	@$(BIN_DIR)/check-env.sh
+	@./gradlew download-fgputil
 	@$(BIN_DIR)/install-oracle.sh
 
-build/libs/service.jar: build.gradle.kts service.properties
+clean:
+	@rm -rf .gradle .tools vendor build
+
+#
+# File based targets
+#
+
+build/libs/service.jar: \
+      vendor/fgputil-accountdb-1.0.0.jar \
+      vendor/fgputil-cache-1.0.0.jar \
+      vendor/fgputil-cli-1.0.0.jar \
+      vendor/fgputil-client-1.0.0.jar \
+      vendor/fgputil-core-1.0.0.jar \
+      vendor/fgputil-db-1.0.0.jar \
+      vendor/fgputil-events-1.0.0.jar \
+      vendor/fgputil-json-1.0.0.jar \
+      vendor/fgputil-server-1.0.0.jar \
+      vendor/fgputil-servlet-1.0.0.jar \
+      vendor/fgputil-solr-1.0.0.jar \
+      vendor/fgputil-test-1.0.0.jar \
+      vendor/fgputil-web-1.0.0.jar \
+      vendor/fgputil-xml-1.0.0.jar \
+      build.gradle.kts \
+      service.properties
 	@echo "Building application jar"
 	@./gradlew clean test shadowJar
