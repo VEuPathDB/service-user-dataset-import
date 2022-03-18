@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Request;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
@@ -148,10 +149,11 @@ public class UserDatasetController implements UserDatasets
 
   @Override
   public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
-    String      jobId,
-    String      uploadType,
+    String jobId,
+    String uploadType,
     InputStream file,
-    String      url
+    FormDataContentDisposition meta,
+    String url
   ) {
     try (InputStream stream = switch(uploadType) {
       case "file" -> file;
@@ -168,14 +170,12 @@ public class UserDatasetController implements UserDatasets
         throw new BadRequestException(errDoubleStart);
 
       var lock = new Object();
-      var bound = Header.getBoundaryString(headers)
-        .orElseThrow(() -> new BadRequestException(errContentType));
 
       //noinspection SynchronizationOnLocalVariableOrMethodParameter
       synchronized (lock) {
         ThreadProvider.newThread(new Importer(
           job,
-          bound,
+          meta.getFileName(),
           new InputStreamNotifier(stream, lock)
         )).start();
         lock.wait();

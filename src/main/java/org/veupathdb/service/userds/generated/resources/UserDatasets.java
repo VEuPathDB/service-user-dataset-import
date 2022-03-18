@@ -2,6 +2,7 @@ package org.veupathdb.service.userds.generated.resources;
 
 import java.io.InputStream;
 import java.util.List;
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -14,6 +15,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.userds.generated.model.PrepRequest;
 import org.veupathdb.service.userds.generated.model.PrepResponse;
@@ -26,7 +28,7 @@ public interface UserDatasets {
   @GET
   @Produces("application/json")
   GetUserDatasetsResponse getUserDatasets(@QueryParam("limit") @DefaultValue("100") Integer limit,
-      @QueryParam("page") @DefaultValue("0") Integer page);
+                                          @QueryParam("page") @DefaultValue("0") Integer page);
 
   @POST
   @Produces("application/json")
@@ -47,10 +49,11 @@ public interface UserDatasets {
   @Produces("application/json")
   @Consumes("multipart/form-data")
   PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
-    @PathParam("jobId")            String      jobId,
-    @FormDataParam("uploadMethod") String      uploadMethod,
-    @FormDataParam("file")         InputStream file,
-    @FormDataParam("url")          String      url
+    @PathParam("jobId") String jobId,
+    @FormDataParam("uploadMethod") String uploadMethod,
+    @FormDataParam("file") InputStream file,
+    @FormDataParam("file") FormDataContentDisposition meta,
+    @FormDataParam("url") String url
   );
 
   class GetUserDatasetsResponse extends ResponseDelegate {
@@ -63,9 +66,10 @@ public interface UserDatasets {
     }
 
     public static GetUserDatasetsResponse respond200WithApplicationJson(
-        List<StatusResponse> entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
-      GenericEntity<List<StatusResponse>> wrappedEntity = new GenericEntity<List<StatusResponse>>(entity){};
+      List<StatusResponse> entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200)
+        .header("Content-Type", "application/json");
+      GenericEntity<List<StatusResponse>> wrappedEntity = new GenericEntity<List<StatusResponse>>(entity) {};
       responseBuilder.entity(wrappedEntity);
       return new GetUserDatasetsResponse(responseBuilder.build(), wrappedEntity);
     }
@@ -81,7 +85,8 @@ public interface UserDatasets {
     }
 
     public static PostUserDatasetsResponse respond200WithApplicationJson(PrepResponse entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
+      Response.ResponseBuilder responseBuilder = Response.status(200)
+        .header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new PostUserDatasetsResponse(responseBuilder.build(), entity);
     }
@@ -112,8 +117,9 @@ public interface UserDatasets {
     }
 
     public static GetUserDatasetsByJobIdResponse respond200WithApplicationJson(
-        StatusResponse entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
+      StatusResponse entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200)
+        .header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new GetUserDatasetsByJobIdResponse(responseBuilder.build(), entity);
     }
@@ -129,8 +135,9 @@ public interface UserDatasets {
     }
 
     public static PostUserDatasetsByJobIdResponse respond200WithApplicationJson(
-        ProcessResponse entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
+      ProcessResponse entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200)
+        .header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new PostUserDatasetsByJobIdResponse(responseBuilder.build(), entity);
     }
