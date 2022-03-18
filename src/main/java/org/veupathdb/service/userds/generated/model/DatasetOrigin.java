@@ -14,5 +14,8 @@ public enum DatasetOrigin {
   DatasetOrigin(String name) {
     this.name = name;
   }
-  public String getValue(){ return name; } 
+
+  public String getValue() {
+    return name;
+  }
 }

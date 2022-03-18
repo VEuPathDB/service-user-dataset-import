@@ -16,13 +16,11 @@ public class MultipartInputStream extends InputStream {
     boundary = makeBoundary();
 
     concat = new ConcatenatedInputStream(
-      new StringInputStream(boundary),
+      new StringInputStream("--" + boundary + "\n"),
       new StringInputStream(makeDisposition(fileName)),
-      new StringInputStream(contentType),
-      new StringInputStream("\n"),
+      new StringInputStream(contentType + "\n"),
       rawInput,
-      new StringInputStream("\n"),
-      new StringInputStream(boundary)
+      new StringInputStream("\n--" + boundary)
     );
   }
 
@@ -36,12 +34,12 @@ public class MultipartInputStream extends InputStream {
   }
 
   private static String makeBoundary() {
-    return String.format("------%s\n", UUID.randomUUID());
+    return String.format("----%s\n", UUID.randomUUID());
   }
 
   private static String makeDisposition(String fileName) {
     return String.format(
-      "Content-Disposition: form-data; name=\"file\"; filename=\"%s\"\n",
+      "Content-Disposition: form-data; name=\"file\"; filename=\"%s\"",
       fileName
     );
   }

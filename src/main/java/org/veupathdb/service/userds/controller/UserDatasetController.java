@@ -31,7 +31,6 @@ import org.veupathdb.service.userds.service.Importer;
 import org.veupathdb.service.userds.service.JobService;
 import org.veupathdb.service.userds.service.ThreadProvider;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
-import org.veupathdb.service.userds.util.http.Header;
 
 import static org.veupathdb.service.userds.service.JobService.deleteJobById;
 import static org.veupathdb.service.userds.service.JobService.getJobByToken;
@@ -100,7 +99,7 @@ public class UserDatasetController implements UserDatasets
       return getJobByToken(jobId)
         .map(JobService::rowToStatus)
         .map(GetUserDatasetsByJobIdResponse::respond200WithApplicationJson)
-        .orElseThrow(() -> new NotFoundException());
+        .orElseThrow(NotFoundException::new);
     } catch (Exception e) {
       throw toRuntimeException(errRowFetch, e);
     }

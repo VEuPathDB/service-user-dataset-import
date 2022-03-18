@@ -35,7 +35,6 @@ install-dev-env:
 		cd .tools && git pull && cd ..; \
 	fi
 	@$(BIN_DIR)/check-env.sh
-	@./gradlew download-fgputil
 	@$(BIN_DIR)/install-oracle.sh
 
 clean:
