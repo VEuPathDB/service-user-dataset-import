@@ -32,6 +32,15 @@ types:
         description: Dataset origin, either `galaxy` or `direct-upload`.
         type: common.DatasetOrigin
         required: false
+      formatParams:
+        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
+        type: FormatParam[]
+        required: false
+  FormatParam:
+    additionalProperties: false
+    properties:
+      key: string
+      value: string
   PrepResponse:
     additionalProperties: false
     properties:

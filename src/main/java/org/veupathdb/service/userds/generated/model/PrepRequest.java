@@ -43,4 +43,10 @@ public interface PrepRequest {
 
   @JsonProperty("origin")
   void setOrigin(DatasetOrigin origin);
+
+  @JsonProperty("formatParams")
+  List<FormatParam> getFormatParams();
+
+  @JsonProperty("formatParams")
+  void setFormatParams(List<FormatParam> formatParams);
 }

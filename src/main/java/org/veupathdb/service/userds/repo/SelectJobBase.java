@@ -3,8 +3,11 @@ package org.veupathdb.service.userds.repo;
 import java.sql.ResultSet;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.veupathdb.service.userds.generated.model.FormatParam;
 import org.veupathdb.service.userds.model.JobRow;
 import org.veupathdb.service.userds.model.ProjectCache;
 import org.veupathdb.service.userds.model.StatusCache;
@@ -25,6 +28,9 @@ abstract class SelectJobBase
     var message = messageStr != null
       ? Format.Json.readTree(messageStr)
       : null;
+    var handlerParamsStr = rs.getString(Schema.Table.Jobs.HANDLER_PARAMS);
+    var handlerParams = Format.Json.readValue(handlerParamsStr,
+        new TypeReference< List < FormatParam > >() {});
 
     return new JobRow(
       rs.getInt(Schema.Table.Jobs.DB_ID),
@@ -41,6 +47,7 @@ abstract class SelectJobBase
           .map(OffsetDateTime::toLocalDateTime)
         .orElse(null),
       message,
+      handlerParams,
       projects,
       DatasetOriginCache.getInstance()
         .get(rs.getShort(Schema.Table.Jobs.ORIGIN_ID))

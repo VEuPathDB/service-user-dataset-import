@@ -7,17 +7,18 @@ public interface Schema
     interface Jobs
     {
       String
-        DB_ID       = "db_id",
-        JOB_ID      = "job_id",
-        USER_ID     = "user_id",
-        STATUS      = "status_id",
-        NAME        = "name",
-        DESCRIPTION = "description",
-        SUMMARY     = "summary",
-        ORIGIN_ID   = "origin_id",
-        TYPE        = "type",
-        STARTED     = "started",
-        FINISHED    = "finished";
+        DB_ID          = "db_id",
+        JOB_ID         = "job_id",
+        USER_ID        = "user_id",
+        STATUS         = "status_id",
+        NAME           = "name",
+        DESCRIPTION    = "description",
+        SUMMARY        = "summary",
+        ORIGIN_ID      = "origin_id",
+        HANDLER_PARAMS = "handler_params",
+        TYPE           = "type",
+        STARTED        = "started",
+        FINISHED       = "finished";
     }
 
     interface JobIrodsIDs

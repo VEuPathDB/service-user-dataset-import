@@ -8,13 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.veupathdb.service.userds.Main;
-import org.veupathdb.service.userds.generated.model.JobError;
-import org.veupathdb.service.userds.generated.model.JobErrorImpl;
-import org.veupathdb.service.userds.generated.model.PrepRequest;
-import org.veupathdb.service.userds.generated.model.StatusResponse;
-import org.veupathdb.service.userds.generated.model.StatusResponseImpl;
-import org.veupathdb.service.userds.generated.model.ValidationErrorsImpl;
+import org.veupathdb.service.userds.generated.model.*;
 import org.veupathdb.service.userds.model.JobRow;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.MetaValidationResult;
@@ -98,6 +94,11 @@ public class JobService
       out.getByKey().put("datasetType", type);
     }
 
+    var formatParams = validateFormatParams(req.getFormatParams());
+    if (!formatParams.isEmpty()) {
+      out.getByKey().put("formatParams", formatParams);
+    }
+
     return out.containsErrors() ? Optional.of(out) : Optional.empty();
   }
 
@@ -165,7 +166,7 @@ public class JobService
    */
   public static JobRow prepToJob(PrepRequest body, String jobId, long userId) {
     return new JobRow(jobId, userId, JobStatus.AWAITING_UPLOAD,
-      body.getDatasetName(), body.getDescription(), body.getSummary(),
+      body.getDatasetName(), body.getDescription(), body.getSummary(), body.getFormatParams(),
       body.getProjects(), DatasetOrigin.fromApiOrigin(body.getOrigin()), body.getDatasetType());
   }
 
@@ -205,6 +206,27 @@ public class JobService
         });
     }
 
+    return out;
+  }
+
+  private static final String
+      valErrMissingKey = "Missing format parameter key",
+      valErrMissingValue = "Missing format parameter value for param with key %s";
+
+  private static List < String > validateFormatParams(List < FormatParam > formatParams) {
+    final var out = new ArrayList < String >();
+    if (formatParams == null) {
+      // format params are optional, return no errors if they are missing.
+      return out;
+    }
+    formatParams.forEach(param -> {
+      if (param.getKey() == null || param.getKey().isEmpty()) {
+        out.add(valErrMissingKey);
+      }
+      if (param.getValue() == null || param.getValue().isEmpty()) {
+        out.add(String.format(valErrMissingValue, param.getKey()));
+      }
+    });
     return out;
   }
 

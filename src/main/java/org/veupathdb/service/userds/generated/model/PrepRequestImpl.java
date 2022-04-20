@@ -12,7 +12,8 @@ import java.util.List;
     "description",
     "summary",
     "projects",
-    "origin"
+    "origin",
+    "formatParams"
 })
 public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("datasetName")
@@ -32,6 +33,9 @@ public class PrepRequestImpl implements PrepRequest {
 
   @JsonProperty("origin")
   private DatasetOrigin origin;
+
+  @JsonProperty("formatParams")
+  private List<FormatParam> formatParams;
 
   @JsonProperty("datasetName")
   public String getDatasetName() {
@@ -91,5 +95,15 @@ public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("origin")
   public void setOrigin(DatasetOrigin origin) {
     this.origin = origin;
+  }
+
+  @JsonProperty("formatParams")
+  public List<FormatParam> getFormatParams() {
+    return this.formatParams;
+  }
+
+  @JsonProperty("formatParams")
+  public void setFormatParams(List<FormatParam> formatParams) {
+    this.formatParams = formatParams;
   }
 }

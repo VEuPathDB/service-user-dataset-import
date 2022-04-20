@@ -7,6 +7,24 @@
 ################################################################################
 
 types:
+  ProjectType: string
+  JobStatus:
+    type: string
+    enum:
+      - sending-to-handler
+      - handler-unpacking
+      - handler-processing
+      - handler-packing
+      - sending-to-datastore
+      - success
+      - rejected
+      - errored
+      - awaiting-upload
+  DatasetOrigin:
+    type: string
+    enum:
+      - galaxy
+      - direct-upload
   StatusResponse:
     type: object
     additionalProperties: false
@@ -81,6 +99,16 @@ types:
         description: Dataset origin, either `galaxy` or `direct-upload`.
         type: DatasetOrigin
         required: false
+      formatParams:
+        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
+        type: FormatParam[]
+        required: false
+  FormatParam:
+    type: object
+    additionalProperties: false
+    properties:
+      key: string
+      value: string
   PrepResponse:
     type: object
     additionalProperties: false
@@ -100,22 +128,4 @@ types:
         default: ok
         enum:
           - ok
-  ProjectType: string
-  JobStatus:
-    type: string
-    enum:
-      - sending-to-handler
-      - handler-unpacking
-      - handler-processing
-      - handler-packing
-      - sending-to-datastore
-      - success
-      - rejected
-      - errored
-      - awaiting-upload
-  DatasetOrigin:
-    type: string
-    enum:
-      - galaxy
-      - direct-upload
 
