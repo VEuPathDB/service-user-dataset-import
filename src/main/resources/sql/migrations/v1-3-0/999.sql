@@ -4,3 +4,4 @@ SET
     value = 'v1.3.0'
 WHERE
     key = 'version'
+;

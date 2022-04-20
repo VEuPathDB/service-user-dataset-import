@@ -70,4 +70,9 @@ public class HandlerPayload
   public DatasetOrigin getOrigin() {
     return origin;
   }
+
+  @JsonGetter
+  public Map < String, String > getHandlerParams() {
+    return handlerParams;
+  }
 }
