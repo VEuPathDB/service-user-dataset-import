@@ -28,9 +28,10 @@ abstract class SelectJobBase
     var message = messageStr != null
       ? Format.Json.readTree(messageStr)
       : null;
-    var handlerParamsStr = rs.getString(Schema.Table.Jobs.HANDLER_PARAMS);
-    var handlerParams = Format.Json.readValue(handlerParamsStr,
-        new TypeReference< List < FormatParam > >() {});
+    var handlerParamsStr = rs.getString(Schema.Table.Jobs.PARAMS);
+    var handlerParams = handlerParamsStr != null
+      ? Format.Json.readValue(handlerParamsStr, new TypeReference< List < FormatParam > >() {})
+      : null;
 
     return new JobRow(
       rs.getInt(Schema.Table.Jobs.DB_ID),

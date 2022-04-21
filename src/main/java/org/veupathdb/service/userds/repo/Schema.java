@@ -15,7 +15,7 @@ public interface Schema
         DESCRIPTION    = "description",
         SUMMARY        = "summary",
         ORIGIN_ID      = "origin_id",
-        HANDLER_PARAMS = "handler_params",
+        PARAMS         = "params",
         TYPE           = "type",
         STARTED        = "started",
         FINISHED       = "finished";
