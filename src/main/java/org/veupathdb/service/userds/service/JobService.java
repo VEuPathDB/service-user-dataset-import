@@ -127,6 +127,7 @@ public class JobService
         .map(Date::from)
         .orElse(null));
     out.setDatasetId(row.getIrodsId());
+    out.setFormatParams(row.getFormatParams().orElse(null));
 
     // If the job status was "errored" then we only have an exception message
     // to return.

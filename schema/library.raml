@@ -51,6 +51,7 @@ types:
         type: ValidationErrors | JobError
         required: false
       origin: DatasetOrigin
+      formatParams: FormatParam[]
       started: datetime
       finished?: datetime
   ValidationErrors:
@@ -128,4 +129,3 @@ types:
         default: ok
         enum:
           - ok
-

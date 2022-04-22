@@ -1,7 +1,0 @@
-version: "3.5"
-
-services:
-
-  biom-handler:
-    build:
-      context: ../dataset-handler-biom
