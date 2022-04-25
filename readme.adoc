@@ -24,6 +24,8 @@ service how to access it.
 Before a new handler can be added, it must first be registered in Jenkins and
 have a built image published to the https://hub.docker.com/u/veupathdb[VEuPathDB Dockerhub].
 
+For more on implementing a handler, see this https://github.com/VEuPathDB/example-dataset-import-handler[import handler template].
+
 === `docker-compose.yml`
 
 To add the new handler to the docker-compose file, copy/paste one of the
@@ -172,3 +174,25 @@ https://github.com/VEuPathDB/service-user-dataset-import/blob/master/stack-readm
 | Postgres
 | The initialization script for the service's backing Postgres datastore.
 |===
+
+=== Running Locally
+
+==== Prerequisites
+
+To bring up the eda project via docker-compose, you’ll need a few things.
+
+* a functioning docker setup and docker-compose (https://www.docker.com/products/docker-desktop)
+
+* a functioning traefik setup. clone the https://github.com/VEuPathDB/docker-traefik[VEuPathDB docker traefik repo], and run docker-compose up -d in the clone, or follow the instructions in that repo. This will run traefik locally, which handles the container routing.
+
+* a functioning sshuttle setup. If you need to access databases on internal networks, you’ll need to properly setup sshuttle so that your containers can reach them. Setting this up is out of scope for this document, to not expose unnecessary internal details publicly. See the https://github.com/VEuPathDB/sshuttle[VEuPathDB sshuttle repo]
+
+==== Local Overrides
+In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose*-local.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose*-local.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
+
+[source, shell script]
+----
+docker-compose -f docker-compose-gene-list-local.yml -f docker-compose.yml
+----
+
+You can also test local changes in the importer service by including the `docker-compose-service-local.yml` file.

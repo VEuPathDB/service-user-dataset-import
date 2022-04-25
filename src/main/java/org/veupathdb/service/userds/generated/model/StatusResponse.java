@@ -75,6 +75,12 @@ public interface StatusResponse {
   @JsonProperty("origin")
   void setOrigin(DatasetOrigin origin);
 
+  @JsonProperty("formatParams")
+  List<FormatParam> getFormatParams();
+
+  @JsonProperty("formatParams")
+  void setFormatParams(List<FormatParam> formatParams);
+
   @JsonProperty("started")
   Date getStarted();
 

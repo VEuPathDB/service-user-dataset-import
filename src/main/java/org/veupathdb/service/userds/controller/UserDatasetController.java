@@ -154,6 +154,7 @@ public class UserDatasetController implements UserDatasets
     FormDataContentDisposition meta,
     String url
   ) {
+    log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadType));
     try (InputStream stream = switch(uploadType) {
       case "file" -> file;
       case "url"  -> new URL(url).openStream();

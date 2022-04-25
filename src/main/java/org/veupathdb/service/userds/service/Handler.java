@@ -47,7 +47,6 @@ public class Handler
   public Optional < Either < HandlerGeneralError, HandlerValidationError > >
   prepareJob(final JobRow job) throws Exception {
     logger.trace("Handler#prepareJob(JobRow)");
-
     var res = HttpClient.newHttpClient()
       .send(
         HttpRequest.newBuilder(
@@ -64,7 +63,8 @@ public class Handler
                   job.getProjects(),
                   job.getOrigin(),
                   job.getDescription().orElse(null),
-                  job.getSummary().orElse(null)
+                  job.getSummary().orElse(null),
+                  job.getFormatParamMap().orElse(null)
                 )
               )
             )

@@ -1,6 +1,7 @@
 package org.veupathdb.service.userds.model.handler;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,13 +21,16 @@ public class HandlerPayload
 
   private final DatasetOrigin origin;
 
+  private final Map< String, String > handlerParams;
+
   public HandlerPayload(
     String name,
     long userId,
     List < String > projects,
     DatasetOrigin origin,
     String description,
-    String summary
+    String summary,
+    Map < String, String > handlerParams
   ) {
     this.name = name;
     this.userId = userId;
@@ -34,6 +38,7 @@ public class HandlerPayload
     this.origin = origin;
     this.description = description;
     this.summary = summary;
+    this.handlerParams = handlerParams;
   }
 
   @JsonGetter("name")
@@ -64,5 +69,10 @@ public class HandlerPayload
   @JsonGetter
   public DatasetOrigin getOrigin() {
     return origin;
+  }
+
+  @JsonGetter
+  public Map < String, String > getHandlerParams() {
+    return handlerParams;
   }
 }
