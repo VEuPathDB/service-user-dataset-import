@@ -1,0 +1,7 @@
+version: "3.5"
+
+services:
+
+  gene-list-handler:
+    build:
+      context: ../dataset-handler-gene-list
