@@ -187,9 +187,6 @@ To bring up the eda project via docker-compose, you’ll need a few things.
 
 Once the service is brought up using `docker-compose`, the endpoints can be accessed at the host name specified in the `TRAEFIK_HOST` environment variable (default configuration is https://udis-dev.local.apidb.org:8443).
 
-==== SSH Forwarding
-There are
-
 ==== Local Overrides
 In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose-build-*.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose-build-*.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
 
