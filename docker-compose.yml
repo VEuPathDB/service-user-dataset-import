@@ -106,7 +106,6 @@ volumes:
   pg-data:
 
 networks:
-  external:
   internal:
     external: false
   traefik:
