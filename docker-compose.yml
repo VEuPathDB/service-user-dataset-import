@@ -19,6 +19,16 @@ services:
       - "traefik.enable=false"
       - "prometheus-scrape.enabled=true"
 
+  # Gene list form handler
+  gene-list-handler:
+    image: veupathdb/user-dataset-handler-gene-list:${GENE_LIST_HANDLER_TAG:-latest}
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}"
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
 
   #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
   #                                                        #
@@ -96,6 +106,7 @@ volumes:
   pg-data:
 
 networks:
+  external:
   internal:
     external: false
   traefik:

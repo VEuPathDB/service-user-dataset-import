@@ -9,6 +9,32 @@
         "biom"
       ],
       "name": "biom-handler"
+    },
+    {
+      "dsType": "gene-list",
+      "projects": [
+        "PlasmoDB",
+        "AmoebaDB",
+        "CryptoDB",
+        "FungiDB",
+        "GiardiaDB",
+        "HostDB",
+        "MicrobiomeDB",
+        "MicrosporidiaDB",
+        "PiroplasmaDB",
+        "PlasmoDB",
+        "SchistoDB",
+        "ToxoDB",
+        "TrichDB",
+        "TritrypDB",
+        "VectorBase"
+      ],
+      "fileTypes": [
+        "txt",
+        "csv",
+        "tsv"
+      ],
+      "name": "gene-list-handler"
     }
   ]
 }

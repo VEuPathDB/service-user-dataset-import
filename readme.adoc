@@ -185,14 +185,15 @@ To bring up the eda project via docker-compose, you’ll need a few things.
 
 * a functioning traefik setup. clone the https://github.com/VEuPathDB/docker-traefik[VEuPathDB docker traefik repo], and run docker-compose up -d in the clone, or follow the instructions in that repo. This will run traefik locally, which handles the container routing.
 
-* a functioning sshuttle setup. If you need to access databases on internal networks, you’ll need to properly setup sshuttle so that your containers can reach them. Setting this up is out of scope for this document, to not expose unnecessary internal details publicly. See the https://github.com/VEuPathDB/sshuttle[VEuPathDB sshuttle repo]
+Once the service is brought up using `docker-compose`, the endpoints can be accessed at the host name specified in the `TRAEFIK_HOST` environment variable (default configuration is https://udis-dev.local.apidb.org:8443).
+
+==== SSH Forwarding
+There are
 
 ==== Local Overrides
-In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose*-local.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose*-local.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
+In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose-build-*.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose-build-*.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
 
 [source, shell script]
 ----
-docker-compose -f docker-compose-gene-list-local.yml -f docker-compose.yml
+docker-compose -f docker-compose-build-gene-list.yml -f docker-compose.yml
 ----
-
-You can also test local changes in the importer service by including the `docker-compose-service-local.yml` file.
