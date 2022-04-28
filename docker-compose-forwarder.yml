@@ -1,0 +1,136 @@
+version: "3.5"
+
+services:
+
+  ldapforward:
+    image: kroniak/ssh-client
+    volumes:
+      - type: bind
+        source: ${SSH_AUTH_SOCKET_SOURCE:-$SSH_AUTH_SOCK}
+        target: ${SSH_AUTH_SOCKET_TARGET:-$SSH_AUTH_SOCK}
+      - type: bind
+        source: $HOME/.ssh/known_hosts
+        target: /root/.ssh/known_hosts
+        read_only: true
+
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
+
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-o"
+      - "ServerAliveInterval=60"
+      - "-L"
+      - "0.0.0.0:389:${LDAPFORWARD_HOST}:389"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+
+    networks:
+      internal:
+        aliases:
+          - ${LDAPFORWARD_HOST}
+      external:
+
+  irodsforward:
+    image: kroniak/ssh-client
+    volumes:
+      - type: bind
+        source: ${SSH_AUTH_SOCKET_SOURCE:-$SSH_AUTH_SOCK}
+        target: ${SSH_AUTH_SOCKET_TARGET:-$SSH_AUTH_SOCK}
+      - type: bind
+        source: $HOME/.ssh/known_hosts
+        target: /root/.ssh/known_hosts
+        read_only: true
+
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
+
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-o"
+      - "ServerAliveInterval=60"
+      - "-L"
+      - "0.0.0.0:1247:${IRODS_HOST}:1247"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+
+    networks:
+      internal:
+        aliases:
+          - ${IRODS_HOST}
+      external:
+
+  dbforward1:
+    image: kroniak/ssh-client
+    volumes:
+      - type: bind
+        source: ${SSH_AUTH_SOCKET_SOURCE:-$SSH_AUTH_SOCK}
+        target: ${SSH_AUTH_SOCKET_TARGET:-$SSH_AUTH_SOCK}
+      - type: bind
+        source: $HOME/.ssh/known_hosts
+        target: /root/.ssh/known_hosts
+        read_only: true
+
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
+
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-o"
+      - "ServerAliveInterval=60"
+      - "-L"
+      - "0.0.0.0:1521:${DBFORWARD_DB1}:1521"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+
+    networks:
+      internal:
+        aliases:
+          - ${DBFORWARD_DB1}
+      external:
+
+  dbforward2:
+    image: kroniak/ssh-client
+    volumes:
+      - type: bind
+        source: ${SSH_AUTH_SOCKET_SOURCE:-$SSH_AUTH_SOCK}
+        target: ${SSH_AUTH_SOCKET_TARGET:-$SSH_AUTH_SOCK}
+      - type: bind
+        source: $HOME/.ssh/known_hosts
+        target: /root/.ssh/known_hosts
+        read_only: true
+
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
+
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-o"
+      - "ServerAliveInterval=60"
+      - "-L"
+      - "0.0.0.0:1521:${DBFORWARD_DB2}:1521"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+
+    networks:
+      internal:
+        aliases:
+          - ${DBFORWARD_DB2}
+      external:
+
+
+  # setup dependencies so the forwarders come up first
+  importer:
+    depends_on:
+      - ldapforward
+      - dbforward1
+      - dbforward2
+      - irodsforward
