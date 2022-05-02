@@ -185,9 +185,65 @@ To bring up the eda project via docker-compose, you’ll need a few things.
 
 * a functioning traefik setup. clone the https://github.com/VEuPathDB/docker-traefik[VEuPathDB docker traefik repo], and run docker-compose up -d in the clone, or follow the instructions in that repo. This will run traefik locally, which handles the container routing.
 
-* a functioning sshuttle setup. If you need to access databases on internal networks, you’ll need to properly setup sshuttle so that your containers can reach them. Setting this up is out of scope for this document, to not expose unnecessary internal details publicly. See the https://github.com/VEuPathDB/sshuttle[VEuPathDB sshuttle repo]
+* a functioning sshuttle setup or see <<_using_the_ssh_forwarder>> for an alternative approach.
 
 Once the service is brought up using `docker-compose`, the endpoints can be accessed at the host name specified in the `TRAEFIK_HOST` environment variable (default configuration is https://udis-dev.local.apidb.org:8443).
+
+==== Using the SSH forwarder
+
+The docker-compose-forwarder.yml file defines an additional set of containers and config that will handle forwarding local db connections. This eliminates the use of sshuttle, and some of the quirks related to sshuttle.
+how to use the forwarder containers
+
+To bring up the stack this way:
+
+* ensure you are running an ssh-agent
+* ensure that your .env file contains the values from env-sample (or use env-sample as a template)
+* run docker-compose -f docker-compose.yml -f docker-compose-forwarder.yml up -d.
+
+how the forwarding containers work:
+
+There are 4 different forwarding containers:
+
+* ldapforward - responsible for forwarding ldap connections to a remote ldap server
+* dbforward1 - responsible for forwarding oracle connections to remote database server
+* dbforward2 - responsible for forwarding oracle connections to remote database server
+* irodsforward - responsible for forwarding irods connections to remote irods server
+
+The forwarding containers map your ssh-agent socket into the container, which allows it to authenticate via ssh to our servers. It then opens an ssh connection using the vars in .env, and forwards ports to internal servers. It exposes these ports itself, so other containers in the stack can connect to it, and it mocks the hostname of the remote server as well. The ssh command is set as the containers entrypoint, which looks like this:
+
+----
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-L"
+      - "0.0.0.0:389:${LDAPFORWARD_HOST}:389"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+----
+
+The companion to the port forwarding above, is setting the hostname as an alias to the remote server:
+
+----
+    networks:
+      internal:
+        aliases:
+          - ${LDAPFORWARD_HOST}
+      external:
+----
+
+The mapping of your local ssh-agent socket into the container is done in the following bind volume:
+
+----
+    volumes:
+      - type: bind
+        source: /run/host-services/ssh-auth.sock
+        target: /ssh-agent
+----
+
+This instructs docker to resolve the `${LDAPFORWARD_HOST}` name to the ldapforward container’s ip. The port forwarding then routes through ssh to the remote ldap server.
+
+The other forwarding containers work exactly the same way, but they forward connections on the port appropriate for their service. You can copy/paste to make a dbforward3 if you like, changing the appropriate vars to the new number - but two are included because it is unlikely you’d need more.
 
 ==== Local Overrides
 In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose-build-*.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose-build-*.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
