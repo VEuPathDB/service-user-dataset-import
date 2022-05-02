@@ -157,7 +157,7 @@ public class UserDatasetController implements UserDatasets
   ) {
     log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadType));
     try (NamedStream namedStream = switch(uploadType) {
-      case "file" -> new NamedStream(meta.getName(), file);
+      case "file" -> new NamedStream(meta.getFileName(), file);
       case "url"  -> new NamedStream(Path.of(url).getFileName().toString(), new URL(url).openStream());
       default     -> throw new UnprocessableEntityException(Map.of(
         "uploadType",
