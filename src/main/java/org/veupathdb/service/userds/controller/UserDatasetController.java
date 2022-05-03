@@ -2,6 +2,7 @@ package org.veupathdb.service.userds.controller;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -155,9 +156,9 @@ public class UserDatasetController implements UserDatasets
     String url
   ) {
     log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadType));
-    try (InputStream stream = switch(uploadType) {
-      case "file" -> file;
-      case "url"  -> new URL(url).openStream();
+    try (NamedStream namedStream = switch(uploadType) {
+      case "file" -> new NamedStream(meta.getFileName(), file);
+      case "url"  -> new NamedStream(Path.of(url).getFileName().toString(), new URL(url).openStream());
       default     -> throw new UnprocessableEntityException(Map.of(
         "uploadType",
         List.of("Invalid upload type, must be one of \"file\" or \"url\"")
@@ -175,8 +176,8 @@ public class UserDatasetController implements UserDatasets
       synchronized (lock) {
         ThreadProvider.newThread(new Importer(
           job,
-          meta.getFileName(),
-          new InputStreamNotifier(stream, lock)
+          namedStream.getName(),
+          new InputStreamNotifier(namedStream.getInputStream(), lock)
         )).start();
         lock.wait();
       }
@@ -193,6 +194,29 @@ public class UserDatasetController implements UserDatasets
   private RuntimeException toRuntimeException(String logMessage, Throwable e) {
     log.error(logMessage, e);
     return (e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(logMessage, e));
+  }
+
+  private static class NamedStream implements AutoCloseable {
+    private final String name;
+    private final InputStream inputStream;
+
+    public NamedStream(String name, InputStream inputStream) {
+      this.name = name;
+      this.inputStream = inputStream;
+    }
+
+    public InputStream getInputStream() {
+      return inputStream;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public void close() throws Exception {
+      this.inputStream.close();
+    }
   }
 
 }
