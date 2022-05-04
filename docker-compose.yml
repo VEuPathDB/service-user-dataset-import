@@ -90,7 +90,7 @@ services:
         echo 'waiting for postgres';
         sleep 1;
       done;
-      java -jar /service.jar"
+      java -Djavax.net.debug=ssl:handshake:verbose:keymanager:trustmanager -jar /service.jar"
     labels:
       - "com.centurylinklabs.watchtower.enable=${IMPORTER_WATCHTOWER:-false}"
       - "traefik.http.routers.${TRAEFIK_ROUTER:-udis-dev}.rule=Host(`${TRAEFIK_HOST:-udis-dev.local.apidb.org}`)"
