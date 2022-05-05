@@ -9,7 +9,7 @@ LABEL service="user-dataset-import"
 
 WORKDIR /workspace
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
-       --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss \
+       --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss,jdk.crypto.ec \
        --output /jlinked \
     && apk add --no-cache git sed findutils coreutils make npm \
     && git config --global advice.detachedHead false
