@@ -35,6 +35,17 @@
         "tsv"
       ],
       "name": "gene-list-handler"
+    },
+    {
+      "dsType": "isasimple",
+      "projects": [
+        "ClinEpiDB"
+      ],
+      "fileTypes": [
+        "csv",
+        "tsv"
+      ],
+      "name": "isasimple-handler"
     }
   ]
 }
