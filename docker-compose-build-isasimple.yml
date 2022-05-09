@@ -5,10 +5,3 @@ services:
   isasimple-handler:
     build:
       context: ../dataset-handler-isasimple
-    networks:
-      - internal
-      - monitoring-ext
-    labels:
-      - "com.centurylinklabs.watchtower.enable=${GENE_LIST_HANDLER_WATCHTOWER:-false}"
-      - "traefik.enable=false"
-      - "prometheus-scrape.enabled=true"

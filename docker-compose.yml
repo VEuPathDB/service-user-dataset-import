@@ -30,6 +30,16 @@ services:
       - "traefik.enable=false"
       - "prometheus-scrape.enabled=true"
 
+  isasimple-handler:
+    image: veupathdb/dataset-handler-isasimple:${ISASIMPLE_HANDLER_TAG:-latest}
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${ISASIMPLE_HANDLER_WATCHTOWER:-false}"
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+
   #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #  #
   #                                                        #
   # Import Service                                         #
