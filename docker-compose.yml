@@ -31,7 +31,7 @@ services:
       - "prometheus-scrape.enabled=true"
 
   isasimple-handler:
-    image: veupathdb/dataset-handler-isasimple:${ISASIMPLE_HANDLER_TAG:-latest}
+    image: veupathdb/user-dataset-handler-isasimple:${ISASIMPLE_HANDLER_TAG:-latest}
     networks:
       - internal
       - monitoring-ext
