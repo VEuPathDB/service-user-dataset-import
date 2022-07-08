@@ -13,13 +13,13 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
-
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.userds.generated.model.PrepRequest;
 import org.veupathdb.service.userds.generated.model.PrepResponse;
 import org.veupathdb.service.userds.generated.model.ProcessResponse;
 import org.veupathdb.service.userds.generated.model.StatusResponse;
+import org.veupathdb.service.userds.generated.model.UserDatasetsJobIdPostMultipartFormData;
 import org.veupathdb.service.userds.generated.support.ResponseDelegate;
 
 @Path("/user-datasets")
@@ -47,12 +47,12 @@ public interface UserDatasets {
   @Path("/{jobId}")
   @Produces("application/json")
   @Consumes("multipart/form-data")
-  PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
-    @PathParam("jobId") String jobId,
-    @FormDataParam("uploadMethod") String uploadMethod,
-    @FormDataParam("file") InputStream file,
-    @FormDataParam("file") FormDataContentDisposition meta,
-    @FormDataParam("url") String url
+  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
+      @PathParam("jobId") String jobId,
+      @FormDataParam("uploadMethod") String uploadMethod,
+      @FormDataParam("file") InputStream file,
+      @FormDataParam("file") FormDataContentDisposition meta,
+      @FormDataParam("url") String url
   );
 
   class GetUserDatasetsResponse extends ResponseDelegate {

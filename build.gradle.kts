@@ -1,40 +1,75 @@
-import java.util.Properties
-import java.io.FileInputStream
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
-  java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "3.2.0"
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+    java
+    id("org.veupathdb.lib.gradle.container.container-utils") version "3.4.3"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-// Load Props
-val buildProps = Properties()
-buildProps.load(FileInputStream(File(rootDir, "service.properties")))
-val fullPack = "${buildProps["app.package.root"]}.${buildProps["app.package.service"]}"
-val genPack = fullPack
+// configure VEupathDB container plugin
+containerBuild {
+
+    // Change if debugging the build process is necessary.
+    logLevel = Level.Trace
+
+    // General project level configuration.
+    project {
+
+        // Project Name
+        name = "user-dataset-import"
+
+        // Project Group
+        group = "org.veupathdb.service"
+
+        // Project Version
+        version = "3.0.0"
+
+        // Project Root Package
+        projectPackage = "org.veupathdb.service.userds"
+
+        // Main Class Name
+        mainClassName = "Main"
+    }
+
+    // Docker build configuration.
+    docker {
+
+        // Docker build context
+        context = "."
+
+        // Name of the target docker file
+        dockerFile = "Dockerfile"
+
+        // Resulting image tag
+        imageName = "user-dataset-import"
+
+    }
+
+    generateJaxRS {
+        // List of custom arguments to use in the jax-rs code generation command
+        // execution.
+        arguments = listOf(/*arg1, arg2, arg3*/)
+
+        // Map of custom environment variables to set for the jax-rs code generation
+        // command execution.
+        environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
+    }
+
+}
 
 java {
-  targetCompatibility = JavaVersion.VERSION_15
-  sourceCompatibility = JavaVersion.VERSION_15
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
-// Project settings
-group = buildProps["project.group"] ?: error("empty 1")
-version = buildProps["project.version"] ?: error("empty 2")
-
-containerBuild {
-  fgputil {
-    version = "4f2eb70"
-  }
-
-  project {
-    projectPackage = "org.veupathdb.service.userds"
-  }
+tasks.shadowJar {
+    exclude("**/Log4j2Plugins.dat")
+    archiveFileName.set("service.jar")
 }
 
 repositories {
+  mavenLocal()
   mavenCentral()
   maven {
     name = "GitHubPackages"
@@ -52,118 +87,75 @@ repositories {
   }
 }
 
+//
+// Project Dependencies
+//
 
-val metrics = "0.9.0"  // Prometheus lib version
+// versions
+val coreLib       = "6.7.4"         // Container core lib version
+val edaCommon     = "9.1.0"         // EDA Common version
+val fgputil       = "2.7.1-jakarta" // FgpUtil version
+
+val jersey        = "3.0.4"       // Jersey/JaxRS version
+val jackson       = "2.13.3"      // FasterXML Jackson version
+val junit         = "5.8.2"       // JUnit version
+val log4j         = "2.17.2"      // Log4J version
+val metrics       = "0.15.0"      // Prometheus lib version
+
+// ensures changing modules are never cached
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+}
 
 dependencies {
 
-  //
-  // FgpUtil & Compatibility Dependencies
-  //
+    // Core lib, prefers local checkout if available
+    implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:${coreLib}")
 
-  // FgpUtil jars
-  implementation(files(
-    "vendor/fgputil-accountdb-1.0.0.jar",
-    "vendor/fgputil-core-1.0.0.jar",
-    "vendor/fgputil-db-1.0.0.jar",
-    "vendor/fgputil-web-1.0.0.jar"
-  ))
+    // published VEuPathDB libs
+    implementation("org.gusdb:fgputil-db:${fgputil}")
 
-  // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.9.0")
-  runtimeOnly("org.json:json:20211205")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.13.2")
-  runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.2")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.2")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
+    // Postgres
+    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("io.vulpine.lib:sql-import:0.2.1")
 
-  //
-  // Project Dependencies
-  //
+    // iRODS
+    implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
 
-  // Oracle
-  runtimeOnly(files(
-    "vendor/ojdbc8.jar",
-    "vendor/ucp.jar",
-    "vendor/xstreams.jar"
-  ))
+    // Jersey
+    implementation("org.glassfish.jersey.core:jersey-server:${jersey}")
+    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${jersey}")
+    implementation("org.glassfish.jersey.media:jersey-media-multipart:${jersey}")
 
-  // Postgres
-  implementation("org.postgresql:postgresql:42.3.3")
-  implementation("com.zaxxer:HikariCP:5.0.1")
-  implementation("io.vulpine.lib:sql-import:0.2.1")
+    // Jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
 
-  // iRODS
-  implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
+    // Log4J
+    implementation("org.apache.logging.log4j:log4j-api:${log4j}")
+    implementation("org.apache.logging.log4j:log4j-core:${log4j}")
 
-  // Core lib, prefers local checkout if available
-  implementation(findProject(":core")
-    ?: "org.veupathdb.lib:jaxrs-container-core:6.3.2")
+    // Metrics
+    implementation("io.prometheus:simpleclient:${metrics}")
+    implementation("io.prometheus:simpleclient_common:${metrics}")
 
-  // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
+    // CLI
+    implementation("info.picocli:picocli:4.6.3")
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
-  // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
+    // Utils
+    implementation("io.vulpine.lib:Jackfish:1.1.0")
+    implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
+    implementation("io.vulpine.lib:iffy:1.0.1")
 
-  // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.17.1")
-  implementation("org.apache.logging.log4j:log4j-core:2.17.1")
-  implementation("org.apache.logging.log4j:log4j:2.16.0")
+    // Unit Testing
+    testImplementation("org.junit.jupiter:junit-jupiter:${junit}")
+    testImplementation("org.mockito:mockito-core:4.3.1")
 
-  // Metrics
-  implementation("io.prometheus:simpleclient:0.15.0")
-  implementation("io.prometheus:simpleclient_common:0.15.0")
-
-  // CLI
-  implementation("info.picocli:picocli:4.6.3")
-  annotationProcessor("info.picocli:picocli-codegen:4.6.3")
-
-  // Utils
-  implementation("io.vulpine.lib:Jackfish:1.1.0")
-  implementation("io.vulpine.lib:iffy:1.0.1")
-  implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
-
-  // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.3.1")
-}
-
-tasks.shadowJar {
-  archiveBaseName.set("service")
-  archiveClassifier.set("")
-  archiveVersion.set("")
-
-  exclude("**/Log4j2Plugins.dat")
-}
-
-tasks.register("print-gen-package") { print(genPack) }
-tasks.register("print-container-name") { print(buildProps["container.name"]) }
-
-tasks.withType<Test> {
-  testLogging {
-    events.addAll(listOf(TestLogEvent.FAILED,
-      TestLogEvent.SKIPPED,
-      TestLogEvent.STANDARD_OUT,
-      TestLogEvent.STANDARD_ERROR,
-      TestLogEvent.PASSED))
-
-    exceptionFormat = TestExceptionFormat.FULL
-    showExceptions = true
-    showCauses = true
-    showStackTraces = true
-    showStandardStreams = true
-    enableAssertions = true
-  }
-  ignoreFailures = true // Always try to run all tests for all modules
 }
 
 val test by tasks.getting(Test::class) {
-  // Use junit platform for unit tests
-  useJUnitPlatform()
+    // Use junit platform for unit tests
+    useJUnitPlatform()
 }

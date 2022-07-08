@@ -12,18 +12,15 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Request;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
-import org.veupathdb.service.userds.generated.model.PrepRequest;
-import org.veupathdb.service.userds.generated.model.PrepResponse;
-import org.veupathdb.service.userds.generated.model.PrepResponseImpl;
-import org.veupathdb.service.userds.generated.model.ProcessResponseImpl;
+import org.veupathdb.service.userds.generated.model.*;
 import org.veupathdb.service.userds.generated.resources.UserDatasets;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.handler.DatasetOrigin;
@@ -51,12 +48,12 @@ public class UserDatasetController implements UserDatasets
 
   private final Logger log;
 
-  private final Request req;
+  private final ContainerRequest req;
 
   private final HttpHeaders headers;
 
   public UserDatasetController(
-    final @Context Request req,
+    final @Context ContainerRequest req,
     final @Context HttpHeaders headers
   ) {
     this.req = req;

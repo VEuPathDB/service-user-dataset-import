@@ -3,11 +3,12 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:jdk-16 AS prep
+FROM veupathdb/alpine-dev-base:jdk-17 AS prep
 
 LABEL service="user-dataset-import"
 
 WORKDIR /workspace
+
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
        --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss,jdk.crypto.ec \
        --output /jlinked \
@@ -18,31 +19,28 @@ RUN apk update \
     && apk add ca-certificates curl \
     && curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
     && update-ca-certificates \
-    && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore $JAVA_HOME/lib/security/cacerts
+    && mkdir -p /opt/jdk/lib/security \
+    && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore /opt/jdk/lib/security/cacerts
 
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
 ENV DOCKER=build
-COPY makefile gradlew ./
+
+# copy files required to build dev environment and fetch dependencies
+COPY makefile build.gradle.kts settings.gradle.kts gradlew ./
 COPY gradle gradle
 
-COPY [ \
-  "build.gradle.kts", \
-  "settings.gradle.kts", \
-  "service.properties", \
-  "./" \
-]
-
+# cache build environment
 RUN make install-dev-env
 
-RUN mkdir -p vendor \
-    && cp -n /jdbc/* vendor \
-    && echo Installing Gradle \
-    && ./gradlew dependencies --info --configuration runtimeClasspath
+# cache gradle and dependencies installation
+RUN ./gradlew dependencies
 
-COPY src src
+# copy remaining files
+COPY . .
 
+# build the project
 RUN make jar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -50,7 +48,7 @@ RUN make jar
 #   Run the service
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM foxcapades/alpine-oracle:1.6
+FROM alpine:3.16
 
 LABEL service="user-dataset-import"
 

@@ -1,23 +1,8 @@
-import java.util.Properties
-import java.io.FileInputStream
-
-val buildProps = Properties()
-buildProps.load(FileInputStream(File(rootDir, "service.properties")))
-
-rootProject.name = buildProps.getProperty("project.name")
-  ?: error("failed to retrieve project name")
-
-val core = file("../lib-jaxrs-container-core");
-if (core.exists()) {
-  include(":core")
-  project(":core").projectDir = core
-}
-
 pluginManagement {
   repositories {
-    gradlePluginPortal()
     mavenLocal()
     mavenCentral()
+    gradlePluginPortal()
     maven {
       name = "GitHubPackages"
       url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
@@ -27,4 +12,10 @@ pluginManagement {
       }
     }
   }
+}
+
+val core = file("../lib-jaxrs-container-core");
+if (core.exists()) {
+  include(":core")
+  project(":core").projectDir = core
 }
