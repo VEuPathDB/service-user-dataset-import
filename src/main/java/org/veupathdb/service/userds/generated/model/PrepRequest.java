@@ -15,10 +15,10 @@ public interface PrepRequest {
   void setDatasetName(String datasetName);
 
   @JsonProperty("datasetType")
-  DatasetType getDatasetType();
+  String getDatasetType();
 
   @JsonProperty("datasetType")
-  void setDatasetType(DatasetType datasetType);
+  void setDatasetType(String datasetType);
 
   @JsonProperty("description")
   String getDescription();
@@ -38,9 +38,15 @@ public interface PrepRequest {
   @JsonProperty("projects")
   void setProjects(List<String> projects);
 
-  @JsonProperty("datasetOrigin")
-  DatasetOrigin getDatasetOrigin();
+  @JsonProperty("origin")
+  DatasetOrigin getOrigin();
 
-  @JsonProperty("datasetOrigin")
-  void setDatasetOrigin(DatasetOrigin datasetOrigin);
+  @JsonProperty("origin")
+  void setOrigin(DatasetOrigin origin);
+
+  @JsonProperty("formatParams")
+  List<FormatParam> getFormatParams();
+
+  @JsonProperty("formatParams")
+  void setFormatParams(List<FormatParam> formatParams);
 }

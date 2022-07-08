@@ -1,8 +1,10 @@
 package org.veupathdb.service.userds.controller;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
@@ -13,15 +15,12 @@ import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ContainerRequest;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
-import org.veupathdb.service.userds.generated.model.PrepRequest;
-import org.veupathdb.service.userds.generated.model.PrepResponse;
-import org.veupathdb.service.userds.generated.model.PrepResponseImpl;
-import org.veupathdb.service.userds.generated.model.ProcessResponseImpl;
-import org.veupathdb.service.userds.generated.model.UserDatasetsJobIdPostMultipartFormData;
+import org.veupathdb.service.userds.generated.model.*;
 import org.veupathdb.service.userds.generated.resources.UserDatasets;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.handler.DatasetOrigin;
@@ -30,7 +29,6 @@ import org.veupathdb.service.userds.service.Importer;
 import org.veupathdb.service.userds.service.JobService;
 import org.veupathdb.service.userds.service.ThreadProvider;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
-import org.veupathdb.service.userds.util.http.Header;
 
 import static org.veupathdb.service.userds.service.JobService.deleteJobById;
 import static org.veupathdb.service.userds.service.JobService.getJobByToken;
@@ -99,7 +97,7 @@ public class UserDatasetController implements UserDatasets
       return getJobByToken(jobId)
         .map(JobService::rowToStatus)
         .map(GetUserDatasetsByJobIdResponse::respond200WithApplicationJson)
-        .orElseThrow(() -> new NotFoundException());
+        .orElseThrow(NotFoundException::new);
     } catch (Exception e) {
       throw toRuntimeException(errRowFetch, e);
     }
@@ -113,8 +111,8 @@ public class UserDatasetController implements UserDatasets
 
     // TODO: This field will become required when Galaxy runs imports through
     //       this service.
-    if (entity.getDatasetOrigin() == null)
-      entity.setDatasetOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
+    if (entity.getOrigin() == null)
+      entity.setOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
 
     try {
       String jobId = JobService.insertJob(entity, UserProvider.lookupUser(req).map(User::getUserID).orElseThrow());
@@ -147,10 +145,21 @@ public class UserDatasetController implements UserDatasets
   }
 
   @Override
-  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(String jobId, UserDatasetsJobIdPostMultipartFormData entity) {
-    try (InputStream file = switch(entity.getUploadMethod()) {
-      case FILE -> new FileInputStream(entity.getFile());
-      case URL -> new URL(entity.getUrl()).openStream();
+  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
+    String jobId,
+    String uploadType,
+    InputStream file,
+    FormDataContentDisposition meta,
+    String url
+  ) {
+    log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadType));
+    try (NamedStream namedStream = switch(uploadType) {
+      case "file" -> new NamedStream(meta.getFileName(), file);
+      case "url"  -> new NamedStream(Path.of(url).getFileName().toString(), new URL(url).openStream());
+      default     -> throw new UnprocessableEntityException(Map.of(
+        "uploadType",
+        List.of("Invalid upload type, must be one of \"file\" or \"url\"")
+      ));
     }) {
       var job = getJobByToken(jobId)
         .orElseThrow(NotFoundException::new);
@@ -159,15 +168,13 @@ public class UserDatasetController implements UserDatasets
         throw new BadRequestException(errDoubleStart);
 
       var lock = new Object();
-      var bound = Header.getBoundaryString(headers)
-        .orElseThrow(() -> new BadRequestException(errContentType));
 
       //noinspection SynchronizationOnLocalVariableOrMethodParameter
       synchronized (lock) {
         ThreadProvider.newThread(new Importer(
           job,
-          bound,
-          new InputStreamNotifier(file, lock)
+          namedStream.getName(),
+          new InputStreamNotifier(namedStream.getInputStream(), lock)
         )).start();
         lock.wait();
       }
@@ -184,6 +191,29 @@ public class UserDatasetController implements UserDatasets
   private RuntimeException toRuntimeException(String logMessage, Throwable e) {
     log.error(logMessage, e);
     return (e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(logMessage, e));
+  }
+
+  private static class NamedStream implements AutoCloseable {
+    private final String name;
+    private final InputStream inputStream;
+
+    public NamedStream(String name, InputStream inputStream) {
+      this.name = name;
+      this.inputStream = inputStream;
+    }
+
+    public InputStream getInputStream() {
+      return inputStream;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public void close() throws Exception {
+      this.inputStream.close();
+    }
   }
 
 }

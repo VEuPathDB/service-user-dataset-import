@@ -6,7 +6,6 @@ uses:
 types:
   DatasetType:
     type: string
-    enum: ['biom']
   PrepRequest:
     additionalProperties: false
     properties:
@@ -29,9 +28,13 @@ types:
         type: array
         minItems: 1
         items: common.ProjectType
-      datasetOrigin:
+      origin:
         description: Dataset origin, either `galaxy` or `direct-upload`.
         type: common.DatasetOrigin
+        required: false
+      formatParams:
+        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
+        type: common.FormatParam[]
         required: false
   PrepResponse:
     additionalProperties: false

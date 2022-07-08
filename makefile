@@ -41,11 +41,11 @@ default:
 	@echo ""
 
 .PHONY: compile
-compile: install-dev-env gen-jaxrs gen-docs
+compile: install-dev-env
 	@./gradlew clean compileJava
 
 .PHONY: test
-test: install-dev-env gen-jaxrs gen-docs
+test: install-dev-env
 	@./gradlew clean test
 
 .PHONY: jar
@@ -64,9 +64,10 @@ install-dev-env:
 
 .PHONY: gen-jaxrs
 gen-jaxrs: api.raml merge-raml
-	@$(BIN_DIR)/generate-jaxrs.sh $(GEN_PACKAGE)
-	@$(BIN_DIR)/generate-jaxrs-streams.sh $(GEN_PACKAGE)
-	@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(GEN_PACKAGE)
+	@echo "Skipping code generation step until form-multipart is natively supported"
+	#@$(BIN_DIR)/generate-jaxrs.sh $(GEN_PACKAGE)
+	#@$(BIN_DIR)/generate-jaxrs-streams.sh $(GEN_PACKAGE)
+	#@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(GEN_PACKAGE)
 
 .PHONY: clean
 clean:
@@ -79,6 +80,7 @@ gen-docs: api.raml merge-raml
 .PHONY: merge-raml
 merge-raml:
 	$(BIN_DIR)/merge-raml schema > schema/library.raml
+
 
 #
 # File based targets

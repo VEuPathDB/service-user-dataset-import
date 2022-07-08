@@ -12,14 +12,15 @@ import java.util.List;
     "description",
     "summary",
     "projects",
-    "datasetOrigin"
+    "origin",
+    "formatParams"
 })
 public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("datasetName")
   private String datasetName;
 
   @JsonProperty("datasetType")
-  private DatasetType datasetType;
+  private String datasetType;
 
   @JsonProperty("description")
   private String description;
@@ -30,8 +31,11 @@ public class PrepRequestImpl implements PrepRequest {
   @JsonProperty("projects")
   private List<String> projects;
 
-  @JsonProperty("datasetOrigin")
-  private DatasetOrigin datasetOrigin;
+  @JsonProperty("origin")
+  private DatasetOrigin origin;
+
+  @JsonProperty("formatParams")
+  private List<FormatParam> formatParams;
 
   @JsonProperty("datasetName")
   public String getDatasetName() {
@@ -44,12 +48,12 @@ public class PrepRequestImpl implements PrepRequest {
   }
 
   @JsonProperty("datasetType")
-  public DatasetType getDatasetType() {
+  public String getDatasetType() {
     return this.datasetType;
   }
 
   @JsonProperty("datasetType")
-  public void setDatasetType(DatasetType datasetType) {
+  public void setDatasetType(String datasetType) {
     this.datasetType = datasetType;
   }
 
@@ -83,13 +87,23 @@ public class PrepRequestImpl implements PrepRequest {
     this.projects = projects;
   }
 
-  @JsonProperty("datasetOrigin")
-  public DatasetOrigin getDatasetOrigin() {
-    return this.datasetOrigin;
+  @JsonProperty("origin")
+  public DatasetOrigin getOrigin() {
+    return this.origin;
   }
 
-  @JsonProperty("datasetOrigin")
-  public void setDatasetOrigin(DatasetOrigin datasetOrigin) {
-    this.datasetOrigin = datasetOrigin;
+  @JsonProperty("origin")
+  public void setOrigin(DatasetOrigin origin) {
+    this.origin = origin;
+  }
+
+  @JsonProperty("formatParams")
+  public List<FormatParam> getFormatParams() {
+    return this.formatParams;
+  }
+
+  @JsonProperty("formatParams")
+  public void setFormatParams(List<FormatParam> formatParams) {
+    this.formatParams = formatParams;
   }
 }

@@ -19,11 +19,18 @@ types:
       - success
       - rejected
       - errored
+      - awaiting-upload
   DatasetOrigin:
     type: string
     enum:
       - galaxy
       - direct-upload
+  FormatParam:
+    type: object
+    additionalProperties: false
+    properties:
+      key: string
+      value: string
   StatusResponse:
     type: object
     additionalProperties: false
@@ -50,6 +57,7 @@ types:
         type: ValidationErrors | JobError
         required: false
       origin: DatasetOrigin
+      formatParams: FormatParam[]
       started: datetime
       finished?: datetime
   ValidationErrors:
@@ -70,10 +78,7 @@ types:
     type: object
     properties:
       message: string
-  DatasetType:
-    type: string
-    enum:
-      - biom
+  DatasetType: string
   PrepRequest:
     type: object
     additionalProperties: false
@@ -97,9 +102,13 @@ types:
         type: array
         minItems: 1
         items: ProjectType
-      datasetOrigin:
+      origin:
         description: Dataset origin, either `galaxy` or `direct-upload`.
         type: DatasetOrigin
+        required: false
+      formatParams:
+        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
+        type: FormatParam[]
         required: false
   PrepResponse:
     type: object

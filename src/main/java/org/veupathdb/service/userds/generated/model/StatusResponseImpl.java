@@ -20,6 +20,7 @@ import java.util.List;
     "status",
     "statusDetails",
     "origin",
+    "formatParams",
     "started",
     "finished"
 })
@@ -50,6 +51,9 @@ public class StatusResponseImpl implements StatusResponse {
 
   @JsonProperty("origin")
   private DatasetOrigin origin;
+
+  @JsonProperty("formatParams")
+  private List<FormatParam> formatParams;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,
@@ -159,6 +163,16 @@ public class StatusResponseImpl implements StatusResponse {
   @JsonProperty("origin")
   public void setOrigin(DatasetOrigin origin) {
     this.origin = origin;
+  }
+
+  @JsonProperty("formatParams")
+  public List<FormatParam> getFormatParams() {
+    return this.formatParams;
+  }
+
+  @JsonProperty("formatParams")
+  public void setFormatParams(List<FormatParam> formatParams) {
+    this.formatParams = formatParams;
   }
 
   @JsonProperty("started")

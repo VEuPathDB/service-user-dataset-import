@@ -7,23 +7,23 @@ FROM veupathdb/alpine-dev-base:jdk-17 AS prep
 
 LABEL service="user-dataset-import"
 
-ARG GITHUB_USERNAME
-ARG GITHUB_TOKEN
-
 WORKDIR /workspace
 
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
-       --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss \
+       --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming,java.net.http,java.security.jgss,jdk.crypto.ec \
        --output /jlinked \
     && apk add --no-cache git sed findutils coreutils make npm \
     && git config --global advice.detachedHead false
 
 RUN apk update \
-    && apk add ca-certificates curl  \
+    && apk add ca-certificates curl \
     && curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
     && update-ca-certificates \
     && mkdir -p /opt/jdk/lib/security \
     && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore /opt/jdk/lib/security/cacerts
+
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
 
 ENV DOCKER=build
 
@@ -62,7 +62,7 @@ ENV JAVA_HOME=/opt/jdk \
     JVM_ARGS=""
 
 COPY --from=prep /jlinked /opt/jdk
-COPY --from=prep /opt/jdk/lib/security/cacerts /opt/jdk/lib/security/cacerts
+COPY --from=prep /usr/lib/jvm/default-jvm/lib/security/cacerts /opt/jdk/lib/security/cacerts
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
 COPY config.json .
 

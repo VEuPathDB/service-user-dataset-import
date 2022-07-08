@@ -69,19 +69,22 @@ tasks.shadowJar {
 }
 
 repositories {
-    mavenCentral()
-    mavenLocal()
-    maven {
-        name = "GitHubPackages"
-        url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
-        credentials {
-            username = if (extra.has("gpr.user")) extra["gpr.user"] as String? else System.getenv("GITHUB_USERNAME")
-            password = if (extra.has("gpr.key")) extra["gpr.key"] as String? else System.getenv("GITHUB_TOKEN")
-        }
+  mavenLocal()
+  mavenCentral()
+  maven {
+    name = "GitHubPackages"
+    url = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+    credentials {
+      username = project.findProperty("gpr.user") as String?
+        ?: System.getenv("GITHUB_USERNAME")
+      password = project.findProperty("gpr.key") as String?
+        ?: System.getenv("GITHUB_TOKEN")
     }
-    maven {
-        url = uri("https://raw.githubusercontent.com/DICE-UNC/DICE-Maven/master/releases")
-    }
+  }
+  maven {
+    url =
+      uri("https://raw.githubusercontent.com/DICE-UNC/DICE-Maven/master/releases")
+  }
 }
 
 //
@@ -113,8 +116,8 @@ dependencies {
     implementation("org.gusdb:fgputil-db:${fgputil}")
 
     // Postgres
-    runtimeOnly("org.postgresql:postgresql:42.2.12")
-    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("io.vulpine.lib:sql-import:0.2.1")
 
     // iRODS
@@ -127,7 +130,6 @@ dependencies {
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson}")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
 
     // Log4J
@@ -139,8 +141,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:${metrics}")
 
     // CLI
-    implementation("info.picocli:picocli:4.2.0")
-    annotationProcessor("info.picocli:picocli-codegen:4.2.0")
+    implementation("info.picocli:picocli:4.6.3")
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
     // Utils
     implementation("io.vulpine.lib:Jackfish:1.1.0")
@@ -149,7 +151,7 @@ dependencies {
 
     // Unit Testing
     testImplementation("org.junit.jupiter:junit-jupiter:${junit}")
-    testImplementation("org.mockito:mockito-core:2.+")
+    testImplementation("org.mockito:mockito-core:4.3.1")
 
 }
 

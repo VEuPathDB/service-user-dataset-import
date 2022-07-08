@@ -3,12 +3,16 @@ package org.veupathdb.service.userds.repo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.veupathdb.service.userds.generated.model.FormatParam;
 import org.veupathdb.service.userds.model.JobRow;
 import org.veupathdb.service.userds.model.ProjectCache;
 import org.veupathdb.service.userds.model.StatusCache;
 import org.veupathdb.service.userds.model.handler.DatasetOriginCache;
 import org.veupathdb.service.userds.util.DbMan;
+import org.veupathdb.service.userds.util.Format;
 
 public class InsertJobQuery
 {
@@ -36,12 +40,23 @@ public class InsertJobQuery
       .orElseThrow());
     out.setString(8, row.getType());
 
-    out.setArray(9, cn.createArrayOf("SMALLINT", row.getProjects()
+    out.setString(9, row.getFormatParams()
+        .map(InsertJobQuery::writeParams)
+        .orElse(null));
+
+    out.setArray(10, cn.createArrayOf("SMALLINT", row.getProjects()
       .stream()
       .map(ProjectCache.getInstance()::get)
       .toArray(Object[]::new)));
 
     return out;
+  }
 
+  private static String writeParams(List<FormatParam> params) {
+    try {
+      return Format.Json.writeValueAsString(params);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

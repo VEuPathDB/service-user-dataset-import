@@ -25,7 +25,10 @@ public enum JobStatus {
   REJECTED("rejected"),
 
   @JsonProperty("errored")
-  ERRORED("errored");
+  ERRORED("errored"),
+
+  @JsonProperty("awaiting-upload")
+  AWAITINGUPLOAD("awaiting-upload");
 
   private String name;
 

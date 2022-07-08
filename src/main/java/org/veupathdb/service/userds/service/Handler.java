@@ -18,9 +18,7 @@ import org.veupathdb.service.userds.model.handler.HandlerGeneralError;
 import org.veupathdb.service.userds.model.handler.HandlerJobResult;
 import org.veupathdb.service.userds.model.handler.HandlerPayload;
 import org.veupathdb.service.userds.model.handler.HandlerValidationError;
-import org.veupathdb.service.userds.util.Errors;
-import org.veupathdb.service.userds.util.Format;
-import org.veupathdb.service.userds.util.InputStreamNotifier;
+import org.veupathdb.service.userds.util.*;
 import org.veupathdb.service.userds.util.http.Header;
 
 import static java.lang.String.format;
@@ -49,7 +47,6 @@ public class Handler
   public Optional < Either < HandlerGeneralError, HandlerValidationError > >
   prepareJob(final JobRow job) throws Exception {
     logger.trace("Handler#prepareJob(JobRow)");
-
     var res = HttpClient.newHttpClient()
       .send(
         HttpRequest.newBuilder(
@@ -66,7 +63,8 @@ public class Handler
                   job.getProjects(),
                   job.getOrigin(),
                   job.getDescription().orElse(null),
-                  job.getSummary().orElse(null)
+                  job.getSummary().orElse(null),
+                  job.getFormatParamMap().orElse(null)
                 )
               )
             )
@@ -95,7 +93,7 @@ public class Handler
    * Submit handler job.
    *
    * @param job      Job Details
-   * @param boundary HTTP multipart/form-data boundary string
+   * @param fileName Name of the file being uploaded.
    * @param body     Upload file
    *
    * @return Result of either a success response or an error.  The error may be
@@ -104,16 +102,19 @@ public class Handler
   public Either < HandlerJobResult, Either < HandlerGeneralError, HandlerValidationError > >
   submitJob(
     final JobRow job,
-    final String boundary,
+    final String fileName,
     final InputStreamNotifier body
   ) throws Exception {
     logger.trace("Handler#submitJob(JobRow, String, InputStream)");
+
+    final var stream = new MultipartInputStream(fileName, body);
+
     try {
       final var res = HttpClient.newHttpClient().send(
         HttpRequest.newBuilder(URI.create(
           format(jobEndpoint, svc.getName(), job.getJobId())))
-          .header(Header.CONTENT_TYPE, MULTIPART_HEAD + boundary)
-          .POST(BodyPublishers.ofInputStream(() -> body))
+          .header(Header.CONTENT_TYPE, MULTIPART_HEAD + stream.getBoundary())
+          .POST(BodyPublishers.ofInputStream(() -> stream))
           .build(),
         BodyHandlers.ofInputStream()
       );

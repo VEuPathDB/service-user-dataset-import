@@ -1,11 +1,157 @@
 = User Dataset Import Service
+:toc:
+:icons: font
 
 https://veupathdb.github.io/service-user-dataset-import/api.html[API Docs]
 
 HTTP service that allows users to upload datasets directly to a site,
 skipping Galaxy entirely.
 
-== In this repo
+== Adding a New Handler
+
+New handlers can be added to the udis stack by editing the
+https://github.com/VEuPathDB/service-user-dataset-import/blob/master/docker-compose.yml[docker-compose.yml]
+file and the
+https://github.com/VEuPathDB/service-user-dataset-import/blob/master/config.json[config.json]
+file with the new handler configuration.
+
+The `docker-compose.yml` file puts the new image on the internal docker network
+so the import service can access it, and the `config.json` file tells the import
+service how to access it.
+
+=== Prerequisites
+
+Before a new handler can be added, it must first be registered in Jenkins and
+have a built image published to the https://hub.docker.com/u/veupathdb[VEuPathDB Dockerhub].
+
+For more on implementing a handler, see this https://github.com/VEuPathDB/example-dataset-import-handler[import handler template].
+
+=== `docker-compose.yml`
+
+To add the new handler to the docker-compose file, copy/paste one of the
+existing handler entries and edit it to suit your new handler.
+
+.Original Config
+[source, yml]
+----
+  biom-handler: <1>
+    image: veupathdb/user-dataset-handler-biom:${BIOME_HANDLER_TAG:-latest} <2>
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}" <3>
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+----
+<1> The internal network name of the handler.  This value must be unique and contain only URL safe characters.
+<2> The docker image name and version env-var
+<3> The watchtower name and version-env-var
+
+To create a new handler in the stack, edit your copy like so:
+
+.Edited Config
+[source, yml]
+----
+  biom-handler:
+    image: veupathdb/user-dataset-handler-biom:${BIOME_HANDLER_TAG:-latest}
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${BIOME_HANDLER_WATCHTOWER:-false}"
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+
+  my-new-handler: <1>
+    image: veupathdb/user-dataset-handler-my-new-handler:${MY_NEW_HANDLER_TAG:-latest} <2>
+    networks:
+      - internal
+      - monitoring-ext
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${MY_NEW_HANDLER_WATCHTOWER:-false}" <3>
+      - "traefik.enable=false"
+      - "prometheus-scrape.enabled=true"
+----
+<1> New handler network name
+<2> Updated docker-image name and version env-var.
+<3> Updated watchtower env-var.
+
+After this change is made and committed, Ops will need to be notified of the
+change so they can update the deployment configuration on their end.
+
+
+=== `config.json`
+
+Similar to the docker-compose file, the easiest way to add a new service
+configuration is to copy an existing one and append it to the `services` array.
+
+.Original Config
+[source, json]
+----
+{
+  "services": [
+    {
+      "dsType": "biom", <1>
+      "projects": [
+        "MicrobiomeDB" <2>
+      ],
+      "fileTypes": [
+        "biom" <3>
+      ],
+      "name": "biom-handler" <4>
+    }
+  ]
+}
+----
+<1> Value that will be sent by the client to select your handler for use with
+    the upload.
+<2> List of projects your handler is allowed to be used from.
+<3> File types/extensions allowed to be handled by your handler.  In addition to
+    the file types listed here, zip and tar files are also permitted by default.
+<4> The network name for your handler as configured in the `docker-compose.yml`
+    file.
+
+.Edited Config
+[source, json]
+----
+{
+  "services": [
+    {
+      "dsType": "biom",
+      "projects": [
+        "MicrobiomeDB"
+      ],
+      "fileTypes": [
+        "biom"
+      ],
+      "name": "biom-handler"
+    },
+    {
+      "dsType": "mine",
+      "projects": [
+        "PlasmoDB",
+        "FungiDB"
+      ],
+      "fileTypes": [
+        "myfile"
+      ],
+      "name": "my-new-handler"
+    }
+  ]
+}
+----
+
+== Development
+
+=== Code Generation
+
+WARNING: Code generation is intentionally disabled in this project due to issues with
+the RAML code generation creating incorrect controller methods for handling
+`multipart/form-data` inputs.
+
+
+=== In this repo
 
 For base contents and explanations see the
 https://github.com/VEuPathDB/example-jaxrs-container-service[template project].
@@ -28,3 +174,81 @@ https://github.com/VEuPathDB/service-user-dataset-import/blob/master/stack-readm
 | Postgres
 | The initialization script for the service's backing Postgres datastore.
 |===
+
+=== Running Locally
+
+==== Prerequisites
+
+To bring up the eda project via docker-compose, you’ll need a few things.
+
+* a functioning docker setup and docker-compose (https://www.docker.com/products/docker-desktop)
+
+* a functioning traefik setup. clone the https://github.com/VEuPathDB/docker-traefik[VEuPathDB docker traefik repo], and run docker-compose up -d in the clone, or follow the instructions in that repo. This will run traefik locally, which handles the container routing.
+
+* a functioning sshuttle setup or see <<_using_the_ssh_forwarder>> for an alternative approach.
+
+Once the service is brought up using `docker-compose`, the endpoints can be accessed at the host name specified in the `TRAEFIK_HOST` environment variable (default configuration is https://udis-dev.local.apidb.org:8443).
+
+==== Using the SSH forwarder
+
+The docker-compose-forwarder.yml file defines an additional set of containers and config that will handle forwarding local db connections. This eliminates the use of sshuttle, and some of the quirks related to sshuttle.
+how to use the forwarder containers
+
+To bring up the stack this way:
+
+* ensure you are running an ssh-agent
+* ensure that your .env file contains the values from env-sample (or use env-sample as a template)
+* run docker-compose -f docker-compose.yml -f docker-compose-forwarder.yml up -d.
+
+how the forwarding containers work:
+
+There are 4 different forwarding containers:
+
+* ldapforward - responsible for forwarding ldap connections to a remote ldap server
+* dbforward1 - responsible for forwarding oracle connections to remote database server
+* dbforward2 - responsible for forwarding oracle connections to remote database server
+* irodsforward - responsible for forwarding irods connections to remote irods server
+
+The forwarding containers map your ssh-agent socket into the container, which allows it to authenticate via ssh to our servers. It then opens an ssh connection using the vars in .env, and forwards ports to internal servers. It exposes these ports itself, so other containers in the stack can connect to it, and it mocks the hostname of the remote server as well. The ssh command is set as the containers entrypoint, which looks like this:
+
+----
+    entrypoint:
+      - "ssh"
+      - "-tNn"
+      - "-p"
+      - "${DBFORWARD_SSH_PORT}"
+      - "-L"
+      - "0.0.0.0:389:${LDAPFORWARD_HOST}:389"
+      - "${DBFORWARD_USER}@${DBFORWARD_HOST}"
+----
+
+The companion to the port forwarding above, is setting the hostname as an alias to the remote server:
+
+----
+    networks:
+      internal:
+        aliases:
+          - ${LDAPFORWARD_HOST}
+      external:
+----
+
+The mapping of your local ssh-agent socket into the container is done in the following bind volume:
+
+----
+    volumes:
+      - type: bind
+        source: /run/host-services/ssh-auth.sock
+        target: /ssh-agent
+----
+
+This instructs docker to resolve the `${LDAPFORWARD_HOST}` name to the ldapforward container’s ip. The port forwarding then routes through ssh to the remote ldap server.
+
+The other forwarding containers work exactly the same way, but they forward connections on the port appropriate for their service. You can copy/paste to make a dbforward3 if you like, changing the appropriate vars to the new number - but two are included because it is unlikely you’d need more.
+
+==== Local Overrides
+In order to run the service, overriding the latest images with your locally built changes, you can make use of the `docker-compose-build-*.yml` files. If you are testing updates to an individual handler, you can include the relevant `docker-compose-build-*.yml` file in addition to the main `docker-compose.yml` file when running docker-compose:
+
+[source, shell script]
+----
+docker-compose -f docker-compose-build-gene-list.yml -f docker-compose.yml
+----

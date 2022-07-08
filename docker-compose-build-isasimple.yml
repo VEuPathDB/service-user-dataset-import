@@ -1,0 +1,7 @@
+version: "3.5"
+
+services:
+
+  isasimple-handler:
+    build:
+      context: ../dataset-handler-isasimple
