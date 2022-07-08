@@ -14,6 +14,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.userds.generated.model.PrepRequest;
 import org.veupathdb.service.userds.generated.model.PrepResponse;
 import org.veupathdb.service.userds.generated.model.ProcessResponse;
@@ -47,11 +48,11 @@ public interface UserDatasets {
   @Produces("application/json")
   @Consumes("multipart/form-data")
   public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
-      String jobId,
-      String uploadType,
-      InputStream file,
-      FormDataContentDisposition meta,
-      String url
+      @PathParam("jobId") String jobId,
+      @FormDataParam("uploadMethod") String uploadMethod,
+      @FormDataParam("file") InputStream file,
+      @FormDataParam("file") FormDataContentDisposition meta,
+      @FormDataParam("url") String url
   );
 
   class GetUserDatasetsResponse extends ResponseDelegate {
