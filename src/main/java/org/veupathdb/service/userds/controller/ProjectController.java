@@ -3,7 +3,7 @@ package org.veupathdb.service.userds.controller;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import org.veupathdb.service.userds.Main;
 import org.veupathdb.service.userds.generated.resources.Projects;
 import org.veupathdb.service.userds.model.Service;

@@ -1,37 +1,82 @@
-import java.util.Properties
-import java.io.FileInputStream
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
-  java
+    java
+    id("org.veupathdb.lib.gradle.container.container-utils") version "3.4.3"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-apply(from = "dependencies.gradle.kts")
+// configure VEupathDB container plugin
+containerBuild {
 
-// Load Props
-val buildProps = Properties()
-buildProps.load(FileInputStream(File(rootDir, "service.properties")))
-val fullPack = "${buildProps["app.package.root"]}.${buildProps["app.package.service"]}"
-val genPack = fullPack
+    // Change if debugging the build process is necessary.
+    logLevel = Level.Trace
+
+    // General project level configuration.
+    project {
+
+        // Project Name
+        name = "user-dataset-import"
+
+        // Project Group
+        group = "org.veupathdb.service"
+
+        // Project Version
+        version = "3.0.0"
+
+        // Project Root Package
+        projectPackage = "org.veupathdb.service.userds"
+
+        // Main Class Name
+        mainClassName = "Main"
+    }
+
+    // Docker build configuration.
+    docker {
+
+        // Docker build context
+        context = "."
+
+        // Name of the target docker file
+        dockerFile = "Dockerfile"
+
+        // Resulting image tag
+        imageName = "user-dataset-import"
+
+    }
+
+    generateJaxRS {
+        // List of custom arguments to use in the jax-rs code generation command
+        // execution.
+        arguments = listOf(/*arg1, arg2, arg3*/)
+
+        // Map of custom environment variables to set for the jax-rs code generation
+        // command execution.
+        environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
+    }
+
+}
 
 java {
-    targetCompatibility = JavaVersion.VERSION_15
-    sourceCompatibility = JavaVersion.VERSION_15
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
-// Project settings
-group = buildProps["project.group"] ?: error("empty 1")
-version = buildProps["project.version"] ?: error("empty 2")
+tasks.shadowJar {
+    exclude("**/Log4j2Plugins.dat")
+    archiveFileName.set("service.jar")
+}
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         name = "GitHubPackages"
         url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
         credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            username = if (extra.has("gpr.user")) extra["gpr.user"] as String? else System.getenv("GITHUB_USERNAME")
+            password = if (extra.has("gpr.key")) extra["gpr.key"] as String? else System.getenv("GITHUB_TOKEN")
         }
     }
     maven {
@@ -39,52 +84,76 @@ repositories {
     }
 }
 
-tasks.jar {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//
+// Project Dependencies
+//
 
-  manifest {
-    attributes["Main-Class"] = "${fullPack}.${buildProps["app.main-class"]}"
-    attributes["Implementation-Title"] = buildProps["project.name"]
-    attributes["Implementation-Version"] = buildProps["project.version"]
-  }
-  println("Packaging Components")
-  from(configurations.runtimeClasspath.get().map {
-    println("  " + it.name)
+// versions
+val coreLib       = "6.7.4"         // Container core lib version
+val edaCommon     = "9.1.0"         // EDA Common version
+val fgputil       = "2.7.1-jakarta" // FgpUtil version
 
-    if (it.isDirectory) it else zipTree(it).matching {
-      exclude { f ->
-        val name = f.name.toLowerCase()
-        (name.contains("log4j") && name.contains(".dat")) ||
-          name.endsWith(".sf") ||
-          name.endsWith(".dsa") ||
-          name.endsWith(".rsa")
-      } } })
-  archiveFileName.set("service.jar")
+val jersey        = "3.0.4"       // Jersey/JaxRS version
+val jackson       = "2.13.3"      // FasterXML Jackson version
+val junit         = "5.8.2"       // JUnit version
+val log4j         = "2.17.2"      // Log4J version
+val metrics       = "0.15.0"      // Prometheus lib version
+
+// ensures changing modules are never cached
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 }
 
-tasks.register("print-gen-package") { print(genPack) }
-tasks.register("print-package") { print(fullPack) }
-tasks.register("print-container-name") { print(buildProps["container.name"]) }
+dependencies {
 
-tasks.withType<Test> {
-    testLogging {
-        events.addAll(listOf(TestLogEvent.FAILED,
-            TestLogEvent.SKIPPED,
-            TestLogEvent.STANDARD_OUT,
-            TestLogEvent.STANDARD_ERROR,
-            TestLogEvent.PASSED))
+    // Core lib, prefers local checkout if available
+    implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:${coreLib}")
 
-        exceptionFormat = TestExceptionFormat.FULL
-        showExceptions = true
-        showCauses = true
-        showStackTraces = true
-        showStandardStreams = true
-        enableAssertions = true
-    }
-    ignoreFailures = true // Always try to run all tests for all modules
+    // published VEuPathDB libs
+    implementation("org.gusdb:fgputil-db:${fgputil}")
+
+    // Postgres
+    runtimeOnly("org.postgresql:postgresql:42.2.12")
+    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("io.vulpine.lib:sql-import:0.2.1")
+
+    // iRODS
+    implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
+
+    // Jersey
+    implementation("org.glassfish.jersey.core:jersey-server:${jersey}")
+    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${jersey}")
+    implementation("org.glassfish.jersey.media:jersey-media-multipart:${jersey}")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson}")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
+
+    // Log4J
+    implementation("org.apache.logging.log4j:log4j-api:${log4j}")
+    implementation("org.apache.logging.log4j:log4j-core:${log4j}")
+
+    // Metrics
+    implementation("io.prometheus:simpleclient:${metrics}")
+    implementation("io.prometheus:simpleclient_common:${metrics}")
+
+    // CLI
+    implementation("info.picocli:picocli:4.2.0")
+    annotationProcessor("info.picocli:picocli-codegen:4.2.0")
+
+    // Utils
+    implementation("io.vulpine.lib:Jackfish:1.1.0")
+    implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
+    implementation("io.vulpine.lib:iffy:1.0.1")
+
+    // Unit Testing
+    testImplementation("org.junit.jupiter:junit-jupiter:${junit}")
+    testImplementation("org.mockito:mockito-core:2.+")
+
 }
 
 val test by tasks.getting(Test::class) {
-  // Use junit platform for unit tests
-  useJUnitPlatform()
+    // Use junit platform for unit tests
+    useJUnitPlatform()
 }

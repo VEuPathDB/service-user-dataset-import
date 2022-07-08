@@ -1,6 +1,6 @@
 package org.veupathdb.service.userds.util;
 
-import javax.ws.rs.core.Request;
+import jakarta.ws.rs.core.Request;
 
 import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.service.userds.generated.model.NotFoundError;

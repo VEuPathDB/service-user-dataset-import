@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
 public class ResponseDelegate extends Response {
   private final Response delegate;
@@ -60,11 +60,6 @@ public class ResponseDelegate extends Response {
   }
 
   @Override
-  public MultivaluedMap<String, Object> getHeaders() {
-    return this.delegate.getHeaders();
-  }
-
-  @Override
   public Object getEntity() {
     return this.entity;}
 
@@ -79,22 +74,22 @@ public class ResponseDelegate extends Response {
   }
 
   @Override
-  public <T> T readEntity(GenericType<T> p0, Annotation[] p1) {
-    return this.delegate.readEntity(p0,p1);
-  }
-
-  @Override
-  public <T> T readEntity(Class<T> p0) {
-    return this.delegate.readEntity(p0);
-  }
-
-  @Override
   public <T> T readEntity(Class<T> p0, Annotation[] p1) {
     return this.delegate.readEntity(p0,p1);
   }
 
   @Override
   public <T> T readEntity(GenericType<T> p0) {
+    return this.delegate.readEntity(p0);
+  }
+
+  @Override
+  public <T> T readEntity(GenericType<T> p0, Annotation[] p1) {
+    return this.delegate.readEntity(p0,p1);
+  }
+
+  @Override
+  public <T> T readEntity(Class<T> p0) {
     return this.delegate.readEntity(p0);
   }
 
@@ -161,6 +156,11 @@ public class ResponseDelegate extends Response {
   @Override
   public String getHeaderString(String p0) {
     return this.delegate.getHeaderString(p0);
+  }
+
+  @Override
+  public MultivaluedMap<String, Object> getHeaders() {
+    return this.delegate.getHeaders();
   }
 
   public static class HeaderBuilderBase {
