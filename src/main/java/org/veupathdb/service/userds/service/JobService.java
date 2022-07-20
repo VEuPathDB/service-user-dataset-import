@@ -140,11 +140,11 @@ public class JobService
     // return.
     } else if (row.getStatus() == JobStatus.REJECTED && row.getMessage().isPresent()) {
       var dets = new ValidationErrorsImpl();
-      dets.setErrors(new ValidationErrorsImpl.ErrorsTypeImpl());
-      dets.getErrors().setGeneral(new ArrayList<>());
       var raw  = row.getMessage().get();
 
       if (raw.has("general")) {
+        dets.setErrors(new ValidationErrorsImpl.ErrorsTypeImpl());
+        dets.getErrors().setGeneral(new ArrayList<>());
         raw.get("general")
           .forEach(j -> dets.getErrors().getGeneral().add(j.textValue()));
       }
