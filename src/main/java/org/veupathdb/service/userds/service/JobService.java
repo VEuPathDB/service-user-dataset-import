@@ -141,13 +141,16 @@ public class JobService
     } else if (row.getStatus() == JobStatus.REJECTED && row.getMessage().isPresent()) {
       var dets = new ValidationErrorsImpl();
       var raw  = row.getMessage().get();
+      dets.setErrors(new ValidationErrorsImpl.ErrorsTypeImpl());
 
       if (raw.has("general")) {
+        dets.getErrors().setGeneral(new ArrayList<>());
         raw.get("general")
           .forEach(j -> dets.getErrors().getGeneral().add(j.textValue()));
       }
 
       if (raw.has("byKey")) {
+        dets.getErrors().setByKey(new ValidationErrorsImpl.ErrorsTypeImpl.ByKeyTypeImpl());
         var obj = raw.get("byKey");
         obj.fieldNames()
           .forEachRemaining(k -> dets.getErrors()
