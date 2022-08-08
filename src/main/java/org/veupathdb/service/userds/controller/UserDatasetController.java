@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
@@ -28,6 +29,7 @@ import org.veupathdb.service.userds.repo.SelectJobsQuery;
 import org.veupathdb.service.userds.service.Importer;
 import org.veupathdb.service.userds.service.JobService;
 import org.veupathdb.service.userds.service.ThreadProvider;
+import org.veupathdb.service.userds.service.metrics.ImportMetrics;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
 
 import static org.veupathdb.service.userds.service.JobService.deleteJobById;
@@ -179,6 +181,7 @@ public class UserDatasetController implements UserDatasets
         lock.wait();
       }
 
+      ImportMetrics.emitSuccessfulUploadByType(1, job.getType());
       return PostUserDatasetsByJobIdResponse.respond200WithApplicationJson(new ProcessResponseImpl());
     } catch (WebApplicationException e) {
       // Don't catch Jax-RS exceptions.
