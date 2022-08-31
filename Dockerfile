@@ -15,13 +15,6 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
     && apk add --no-cache git sed findutils coreutils make npm \
     && git config --global advice.detachedHead false
 
-RUN apk update \
-    && apk add ca-certificates curl \
-    && curl https://veupathdb.org/common/apidb-ca-rsa.crt -o /usr/local/share/ca-certificates/apidb-ca-rsa.crt \
-    && update-ca-certificates \
-    && mkdir -p /opt/jdk/lib/security \
-    && keytool -import -storepass changeit -noprompt -file /usr/local/share/ca-certificates/apidb-ca-rsa.crt -keystore /opt/jdk/lib/security/cacerts
-
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
