@@ -9,10 +9,11 @@ WITH job AS (
     , summary
     , origin_id
     , type
+    , started
     , params
   )
   VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?, ?::JSONB)
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::JSONB)
   RETURNING db_id
 )
 INSERT INTO
