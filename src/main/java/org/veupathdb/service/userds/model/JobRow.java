@@ -73,9 +73,10 @@ public class JobRow
     final List < FormatParam > handlerParams,
     final List < String >      projects,
     final DatasetOrigin        origin,
-    final String               type
+    final String               type,
+    final LocalDateTime        started
   ) {
-    this(0, jobId, userId, status, name, description, summary, null, null, null, handlerParams,
+    this(0, jobId, userId, status, name, description, summary, started, null, null, handlerParams,
       projects, origin, type, 0);
   }
 

@@ -3,6 +3,7 @@ package org.veupathdb.service.userds.service;
 import com.devskiller.friendly_id.FriendlyId;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -171,7 +172,7 @@ public class JobService
   public static JobRow prepToJob(PrepRequest body, String jobId, long userId) {
     return new JobRow(jobId, userId, JobStatus.AWAITING_UPLOAD,
       body.getDatasetName(), body.getDescription(), body.getSummary(), body.getFormatParams(),
-      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getOrigin()), body.getDatasetType());
+      body.getProjects(), DatasetOrigin.fromApiOrigin(body.getOrigin()), body.getDatasetType(), LocalDateTime.now());
   }
 
   /**

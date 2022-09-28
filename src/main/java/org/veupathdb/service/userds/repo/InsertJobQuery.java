@@ -3,6 +3,7 @@ package org.veupathdb.service.userds.repo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,12 +40,11 @@ public class InsertJobQuery
       .get(row.getOrigin())
       .orElseThrow());
     out.setString(8, row.getType());
-
-    out.setString(9, row.getFormatParams()
+    out.setObject(9, row.getStarted().atOffset(ZoneOffset.UTC));
+    out.setString(10, row.getFormatParams()
         .map(InsertJobQuery::writeParams)
         .orElse(null));
-
-    out.setArray(10, cn.createArrayOf("SMALLINT", row.getProjects()
+    out.setArray(11, cn.createArrayOf("SMALLINT", row.getProjects()
       .stream()
       .map(ProjectCache.getInstance()::get)
       .toArray(Object[]::new)));
