@@ -7,6 +7,57 @@
 ################################################################################
 
 types:
+  DatasetType: string
+  PrepRequest:
+    type: object
+    additionalProperties: false
+    properties:
+      datasetName:
+        description: Name for the user dataset.  Will be visible in the site(s).
+        type: string
+      datasetType:
+        description: Type of the dataset job.
+        type: DatasetType
+      description:
+        description: Optional description for the user dataset.
+        type: string
+        required: false
+      summary:
+        description: Optional summary of the user dataset.
+        type: string
+        required: false
+      projects:
+        description: Target projects for which this user dataset should be made available for install.
+        type: array
+        minItems: 1
+        items: ProjectType
+      origin:
+        description: Dataset origin, either `galaxy` or `direct-upload`.
+        type: DatasetOrigin
+        required: false
+      formatParams:
+        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
+        type: FormatParam[]
+        required: false
+  PrepResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      status:
+        type: string
+        enum:
+          - ok
+      jobId: string
+  ProcessResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      status:
+        description: Upload completion status
+        type: string
+        default: ok
+        enum:
+          - ok
   ProjectType: string
   JobStatus:
     type: string
@@ -78,55 +129,4 @@ types:
     type: object
     properties:
       message: string
-  DatasetType: string
-  PrepRequest:
-    type: object
-    additionalProperties: false
-    properties:
-      datasetName:
-        description: Name for the user dataset.  Will be visible in the site(s).
-        type: string
-      datasetType:
-        description: Type of the dataset job.
-        type: DatasetType
-      description:
-        description: Optional description for the user dataset.
-        type: string
-        required: false
-      summary:
-        description: Optional summary of the user dataset.
-        type: string
-        required: false
-      projects:
-        description: Target projects for which this user dataset should be made available for install.
-        type: array
-        minItems: 1
-        items: ProjectType
-      origin:
-        description: Dataset origin, either `galaxy` or `direct-upload`.
-        type: DatasetOrigin
-        required: false
-      formatParams:
-        description: Parameters specific to the format to import, (e.g. Genome for the GeneList handler)
-        type: FormatParam[]
-        required: false
-  PrepResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      status:
-        type: string
-        enum:
-          - ok
-      jobId: string
-  ProcessResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      status:
-        description: Upload completion status
-        type: string
-        default: ok
-        enum:
-          - ok
 
