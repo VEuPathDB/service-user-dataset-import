@@ -2,7 +2,7 @@ import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
     java
-    id("org.veupathdb.lib.gradle.container.container-utils") version "4.0.0"
+    id("org.veupathdb.lib.gradle.container.container-utils") version "4.5.3"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -91,16 +91,10 @@ repositories {
 // Project Dependencies
 //
 
-// versions
-val coreLib       = "6.8.0"         // Container core lib version
-val edaCommon     = "9.1.0"         // EDA Common version
-val fgputil       = "2.7.1-jakarta" // FgpUtil version
-
-val jersey        = "3.0.4"       // Jersey/JaxRS version
-val jackson       = "2.13.3"      // FasterXML Jackson version
-val junit         = "5.8.2"       // JUnit version
-val log4j         = "2.17.2"      // Log4J version
-val metrics       = "0.15.0"      // Prometheus lib version
+// versions of VEuPathDB libs
+val coreLib       = "6.11.0"         // Container core lib version
+val edaCommon     = "9.3.1"          // EDA Common version
+val fgputil       = "2.8.1-jakarta"  // FgpUtil version
 
 // ensures changing modules are never cached
 configurations.all {
@@ -116,7 +110,7 @@ dependencies {
     implementation("org.gusdb:fgputil-db:${fgputil}")
 
     // Postgres
-    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("io.vulpine.lib:sql-import:0.2.1")
 
@@ -124,25 +118,25 @@ dependencies {
     implementation("org.irods.jargon:jargon-core:4.3.1.0-RELEASE")
 
     // Jersey
-    implementation("org.glassfish.jersey.core:jersey-server:${jersey}")
-    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${jersey}")
-    implementation("org.glassfish.jersey.media:jersey-media-multipart:${jersey}")
+    implementation("org.glassfish.jersey.core:jersey-server:3.0.8")
+    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.8")
+    implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.8")
 
     // Jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.4")
 
     // Log4J
-    implementation("org.apache.logging.log4j:log4j-api:${log4j}")
-    implementation("org.apache.logging.log4j:log4j-core:${log4j}")
+    implementation("org.apache.logging.log4j:log4j-api:2.19.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.19.0")
 
     // Metrics
-    implementation("io.prometheus:simpleclient:${metrics}")
-    implementation("io.prometheus:simpleclient_common:${metrics}")
+    implementation("io.prometheus:simpleclient:0.16.0")
+    implementation("io.prometheus:simpleclient_common:0.16.0")
 
     // CLI
-    implementation("info.picocli:picocli:4.6.3")
-    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
+    implementation("info.picocli:picocli:4.7.0")
+    annotationProcessor("info.picocli:picocli-codegen:4.7.0")
 
     // Utils
     implementation("io.vulpine.lib:Jackfish:1.1.0")
@@ -150,8 +144,8 @@ dependencies {
     implementation("io.vulpine.lib:iffy:1.0.1")
 
     // Unit Testing
-    testImplementation("org.junit.jupiter:junit-jupiter:${junit}")
-    testImplementation("org.mockito:mockito-core:4.3.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.mockito:mockito-core:4.8.0")
 
 }
 
