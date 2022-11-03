@@ -89,6 +89,14 @@ public class ExtOptions extends Options
   )
   private String dsPass;
 
+  @Option(
+      names = "--admin-user-id",
+      defaultValue = "${env:ADMIN_USER_ID}",
+      description = "env: ADMIN_USER_ID",
+      arity = "1"
+  )
+  private Integer adminUserId;
+
   public Optional < String > getIrodsHost() {
     return Optional.ofNullable(irodsHost);
   }
@@ -131,5 +139,9 @@ public class ExtOptions extends Options
 
   public Optional < String > getDsPass() {
     return Optional.ofNullable(dsPass);
+  }
+
+  public Optional < Integer > getAdminUserId() {
+    return Optional.ofNullable(adminUserId);
   }
 }
