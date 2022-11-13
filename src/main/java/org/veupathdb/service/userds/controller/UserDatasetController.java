@@ -19,6 +19,7 @@ import org.veupathdb.service.userds.generated.model.PrepResponseImpl;
 import org.veupathdb.service.userds.generated.model.ProcessResponseImpl;
 import org.veupathdb.service.userds.generated.resources.UserDatasets;
 import org.veupathdb.service.userds.model.JobStatus;
+import org.veupathdb.service.userds.model.config.ExtOptions;
 import org.veupathdb.service.userds.model.handler.DatasetOrigin;
 import org.veupathdb.service.userds.repo.SelectJobsQuery;
 import org.veupathdb.service.userds.service.Importer;
@@ -32,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.veupathdb.service.userds.service.JobService.*;
@@ -52,6 +54,12 @@ public class UserDatasetController implements UserDatasets
   private final ContainerRequest req;
 
   private final HttpHeaders headers;
+
+  private static Optional<Long> superUserId;
+
+  public static void initialize(ExtOptions opts) {
+    superUserId = opts.getSuperUserId();
+  }
 
   public UserDatasetController(
     final @Context ContainerRequest req,
@@ -99,14 +107,16 @@ public class UserDatasetController implements UserDatasets
   If one is provided, validate that the standard user ID equals the configured Super User ID, and return the originating user ID.
    */
   long findRealUserId() {
-    String ORIGINATING_USER_ID_KEY = "originating-user-id";
-    long superUserId = 2;
+    String ORIGINATING_USER_ID_KEY = "originating-user-id"; // TODO: fix this
     long userId = UserProvider.lookupUser(req).orElseThrow().getUserID();
     String originatingUserIdString = req.getHeaderString(ORIGINATING_USER_ID_KEY);
     if (originatingUserIdString == null) return userId;
+
+    // handle the case where we have an originating user ID
     try {
       long origUserId = Long.parseLong(originatingUserIdString);
-      if (userId != superUserId)
+      long superId = superUserId.orElseThrow(() -> new RuntimeException("super-user-id required to handle request with originating user id"));
+      if (userId != superId)
         throw new BadRequestException("Illegal header.  Can only provide " + ORIGINATING_USER_ID_KEY + " if user is super user.");
       return origUserId;
     } catch(NumberFormatException e) {

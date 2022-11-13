@@ -9,10 +9,17 @@ import picocli.CommandLine.Option;
 public class ExtOptions extends Options
 {
   @Option(
-    names = "--irods-host",
-    defaultValue = "${env:IRODS_HOST}",
-    description = "env: IRODS_HOST",
+    names = "--super-user-id",
+    defaultValue = "${env:SUPER_USER_ID}",
+    description = "env: SUPER_USER_ID",
     arity = "1")
+  private Long superUserId;
+
+  @Option(
+          names = "--irods-host",
+          defaultValue = "${env:IRODS_HOST}",
+          description = "env: IRODS_HOST",
+          arity = "1")
   private String irodsHost;
 
   @Option(
@@ -88,6 +95,10 @@ public class ExtOptions extends Options
     arity = "1"
   )
   private String dsPass;
+
+  public Optional < Long > getSuperUserId() {
+    return Optional.ofNullable(superUserId);
+  }
 
   public Optional < String > getIrodsHost() {
     return Optional.ofNullable(irodsHost);

@@ -12,6 +12,7 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.Dependency;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.lib.container.jaxrs.server.Server;
+import org.veupathdb.service.userds.controller.UserDatasetController;
 import org.veupathdb.service.userds.model.config.ExtOptions;
 import org.veupathdb.service.userds.model.config.HandlerConfig;
 import org.veupathdb.service.userds.repo.SelectOriginQuery;
@@ -47,6 +48,9 @@ public class Main extends Server {
   protected void postCliParse(Options opts) {
     LOG.info("Initializing iRODS library");
     Irods.initialize(options);
+
+    LOG.info("Initializing super user ID, if provided");
+    UserDatasetController.initialize(options);
 
     LOG.info("Initializing import datastore connection");
     importDB = DbMan.initImportDb();
