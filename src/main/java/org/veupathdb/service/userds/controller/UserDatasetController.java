@@ -49,6 +49,8 @@ public class UserDatasetController implements UserDatasets
     errDoubleStart   = "cannot resubmit an upload to a started job",
     errDelJobRunning = "cannot delete a job that is in progress";
 
+  private final static String ORIGINATING_USER_ID_KEY = "originating-user-id"; // TODO: where should this be defined?
+
   private final Logger log;
 
   private final ContainerRequest req;
@@ -89,7 +91,7 @@ public class UserDatasetController implements UserDatasets
     }
 
     try {
-      return GetUserDatasetsResponse.respond200WithApplicationJson(getJobsByUser(findRealUserId(), limit, page)
+      return GetUserDatasetsResponse.respond200WithApplicationJson(getJobsByUser(extractUserId(), limit, page)
         .stream()
         .map(JobService::rowToStatus)
         .collect(Collectors.toList()));
@@ -99,17 +101,18 @@ public class UserDatasetController implements UserDatasets
   }
 
   /*
-  Return either the standard user ID or the "originating user id."  This is in support of external services, such as Galaxy, that
-  need to use a Super User to authenticate to this service.
+  Extract from the request either the standard user ID or the "originating user id."  This is in support of
+  external services, such as Galaxy, that use a Super User to authenticate to this service.
 
   If no originating user ID is provided in the request header, return the standard user ID.
 
   If one is provided, validate that the standard user ID equals the configured Super User ID, and return the originating user ID.
    */
-  long findRealUserId() {
-    String ORIGINATING_USER_ID_KEY = "originating-user-id"; // TODO: fix this
+  long extractUserId() {
+
+    String originatingUserIdString = req.getHeaderString(ORIGINATING_USER_ID_KEY); // TODO: is this correct?
+
     long userId = UserProvider.lookupUser(req).orElseThrow().getUserID();
-    String originatingUserIdString = req.getHeaderString(ORIGINATING_USER_ID_KEY);
     if (originatingUserIdString == null) return userId;
 
     // handle the case where we have an originating user ID
@@ -148,7 +151,7 @@ public class UserDatasetController implements UserDatasets
       entity.setOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
 
     try {
-      String jobId = JobService.insertJob(entity, findRealUserId());
+      String jobId = JobService.insertJob(entity, extractUserId());
       PrepResponse response = new PrepResponseImpl();
       response.setJobId(jobId);
       return PostUserDatasetsResponse.respond200WithApplicationJson(response);
