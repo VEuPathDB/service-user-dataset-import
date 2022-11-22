@@ -49,7 +49,7 @@ public class UserDatasetController implements UserDatasets
     errDoubleStart   = "cannot resubmit an upload to a started job",
     errDelJobRunning = "cannot delete a job that is in progress";
 
-  private final static String ORIGINATING_USER_ID_KEY = "originating-user-id"; // TODO: where should this be defined?
+  private final static String ORIGINATING_USER_ID_HEADER_KEY = "originating-user-id"; // TODO: where should this be defined?
 
   private final Logger log;
 
@@ -110,7 +110,7 @@ public class UserDatasetController implements UserDatasets
    */
   long extractUserId() {
 
-    String originatingUserIdString = req.getHeaderString(ORIGINATING_USER_ID_KEY); // TODO: is this correct?
+    String originatingUserIdString = req.getHeaderString(ORIGINATING_USER_ID_HEADER_KEY);
 
     long userId = UserProvider.lookupUser(req).orElseThrow().getUserID();
     if (originatingUserIdString == null) return userId;
@@ -118,12 +118,14 @@ public class UserDatasetController implements UserDatasets
     // handle the case where we have an originating user ID
     try {
       long origUserId = Long.parseLong(originatingUserIdString);
-      long superId = superUserId.orElseThrow(() -> new RuntimeException("super-user-id required to handle request with originating user id"));
+      long superId = superUserId.orElseThrow(() ->
+              new RuntimeException("To handle a request with a " + ORIGINATING_USER_ID_HEADER_KEY + " header key, this service must be configured with a SUPER_USER_ID"));
       if (userId != superId)
-        throw new BadRequestException("Illegal header.  Can only provide " + ORIGINATING_USER_ID_KEY + " if user is super user.");
+        throw new BadRequestException("Illegal header.  Can only provide " + ORIGINATING_USER_ID_HEADER_KEY +
+                " if the request's user is the service's configured super user.");
       return origUserId;
     } catch(NumberFormatException e) {
-      throw new BadRequestException("Illegal header value for " + ORIGINATING_USER_ID_KEY + ": '" + originatingUserIdString + "'") ;
+      throw new BadRequestException("Unparseable header value for " + ORIGINATING_USER_ID_HEADER_KEY + ": '" + originatingUserIdString + "'") ;
     }
   }
 

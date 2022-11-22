@@ -18,6 +18,9 @@ public enum JobStatus {
   @JsonProperty("sending-to-datastore")
   SENDINGTODATASTORE("sending-to-datastore"),
 
+  @JsonProperty("datastore-unpacking")
+  DATASTOREUNPACKING("datastore-unpacking"),
+
   @JsonProperty("success")
   SUCCESS("success"),
 

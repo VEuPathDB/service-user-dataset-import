@@ -85,6 +85,9 @@ services:
       # User token salt
       AUTH_SECRET_KEY: ${AUTH_SECRET_KEY}
 
+      # so that galaxy can talk to the service
+      SUPER_USER_ID: ${SUPER_USER_ID}
+      
       # Account DB Connection Info
       ACCT_DB_USER: ${ACCT_DB_USER}
       ACCT_DB_PASS: ${ACCT_DB_PASS}
