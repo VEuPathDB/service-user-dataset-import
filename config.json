@@ -3,6 +3,7 @@
     {
       "dsType": "biom",
       "projects": [
+        "ClinEpiDB",
         "MicrobiomeDB"
       ],
       "fileTypes": [
@@ -39,7 +40,8 @@
     {
       "dsType": "isasimple",
       "projects": [
-        "ClinEpiDB"
+        "ClinEpiDB",
+        "MicrobiomeDB"
       ],
       "fileTypes": [
         "csv",
