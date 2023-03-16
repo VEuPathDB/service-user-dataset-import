@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 
 public class ProjectController implements Projects {
-  private static final String[] BASE_FILE_TYPES = {"zip", "tar.gz", "tgz"};
+  private static final String[] BASE_FILE_TYPES = {"zip", "gz", "tgz"};
 
   @Override
   public GetProjectsResponse getProjects() {
