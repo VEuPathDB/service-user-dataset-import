@@ -42,11 +42,14 @@ public interface UserDatasetsJobIdPostMultipartFormData {
     @JsonProperty("file")
     FILE("file");
 
-    private String name;
+    public final String value;
+
+    public String getValue() {
+      return this.value;
+    }
 
     UploadMethodType(String name) {
-      this.name = name;
+      this.value = name;
     }
-    public String getValue(){ return name; } 
-}
+  }
 }

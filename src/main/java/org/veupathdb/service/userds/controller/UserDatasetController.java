@@ -1,12 +1,5 @@
 package org.veupathdb.service.userds.controller;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
@@ -16,12 +9,12 @@ import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ContainerRequest;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.userds.generated.model.*;
+import org.veupathdb.service.userds.generated.model.UserDatasetsJobIdPostMultipartFormData.UploadMethodType;
 import org.veupathdb.service.userds.generated.resources.UserDatasets;
 import org.veupathdb.service.userds.model.JobStatus;
 import org.veupathdb.service.userds.model.handler.DatasetOrigin;
@@ -32,10 +25,15 @@ import org.veupathdb.service.userds.service.ThreadProvider;
 import org.veupathdb.service.userds.service.metrics.ImportMetrics;
 import org.veupathdb.service.userds.util.InputStreamNotifier;
 
-import static org.veupathdb.service.userds.service.JobService.deleteJobById;
-import static org.veupathdb.service.userds.service.JobService.getJobByToken;
-import static org.veupathdb.service.userds.service.JobService.getJobsByUser;
-import static org.veupathdb.service.userds.service.JobService.validateJobMeta;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.veupathdb.service.userds.service.JobService.*;
 
 @Authenticated
 public class UserDatasetController implements UserDatasets
@@ -83,7 +81,7 @@ public class UserDatasetController implements UserDatasets
 
     try {
       return GetUserDatasetsResponse.respond200WithApplicationJson(getJobsByUser(UserProvider.lookupUser(req)
-        .map(User::getUserID)
+        .map(User::getUserId)
         .orElseThrow(), limit, page)
         .stream()
         .map(JobService::rowToStatus)
@@ -117,7 +115,7 @@ public class UserDatasetController implements UserDatasets
       entity.setOrigin(DatasetOrigin.DIRECT_UPLOAD.toApiOrigin());
 
     try {
-      String jobId = JobService.insertJob(entity, UserProvider.lookupUser(req).map(User::getUserID).orElseThrow());
+      String jobId = JobService.insertJob(entity, UserProvider.lookupUser(req).map(User::getUserId).orElseThrow());
       PrepResponse response = new PrepResponseImpl();
       response.setJobId(jobId);
       return PostUserDatasetsResponse.respond200WithApplicationJson(response);
@@ -147,17 +145,16 @@ public class UserDatasetController implements UserDatasets
   }
 
   @Override
-  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(
-    String jobId,
-    String uploadType,
-    InputStream file,
-    FormDataContentDisposition meta,
-    String url
-  ) {
-    log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadType));
-    try (NamedStream namedStream = switch(uploadType) {
-      case "file" -> new NamedStream(meta.getFileName(), file);
-      case "url"  -> new NamedStream(getFilenameFromURL(url), new URL(url).openStream());
+  public PostUserDatasetsByJobIdResponse postUserDatasetsByJobId(String jobId, UserDatasetsJobIdPostMultipartFormData entity) {
+    UploadMethodType uploadMethod = entity.getUploadMethod();
+    Object objCheck = uploadMethod == UploadMethodType.FILE ? entity.getFile() : entity.getUrl();
+    if (objCheck == null) {
+      throw new BadRequestException("With this upload method, '" + uploadMethod.getValue() + "' property is required.");
+    }
+    log.debug(String.format("Posting user datasets with jobId %s and uploadType %s", jobId, uploadMethod.name()));
+    try (NamedStream namedStream = switch(uploadMethod) {
+      case FILE -> new NamedStream(entity.getFile().getName(), new FileInputStream(entity.getFile()));
+      case URL  -> new NamedStream(getFilenameFromURL(entity.getUrl()), new URL(entity.getUrl()).openStream());
       default     -> throw new UnprocessableEntityException(Map.of(
         "uploadType",
         List.of("Invalid upload type, must be one of \"file\" or \"url\"")

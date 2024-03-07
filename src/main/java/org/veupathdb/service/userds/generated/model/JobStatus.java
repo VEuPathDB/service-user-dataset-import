@@ -30,10 +30,13 @@ public enum JobStatus {
   @JsonProperty("awaiting-upload")
   AWAITINGUPLOAD("awaiting-upload");
 
-  private String name;
+  public final String value;
+
+  public String getValue() {
+    return this.value;
+  }
 
   JobStatus(String name) {
-    this.name = name;
+    this.value = name;
   }
-  public String getValue(){ return name; } 
 }

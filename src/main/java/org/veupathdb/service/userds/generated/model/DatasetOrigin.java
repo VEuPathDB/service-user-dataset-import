@@ -9,10 +9,13 @@ public enum DatasetOrigin {
   @JsonProperty("direct-upload")
   DIRECTUPLOAD("direct-upload");
 
-  private String name;
+  public final String value;
+
+  public String getValue() {
+    return this.value;
+  }
 
   DatasetOrigin(String name) {
-    this.name = name;
+    this.value = name;
   }
-  public String getValue(){ return name; } 
 }
