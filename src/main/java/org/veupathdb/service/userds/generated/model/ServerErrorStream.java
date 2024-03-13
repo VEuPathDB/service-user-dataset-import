@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
 
-public class HealthResponseStream extends HealthResponseImpl implements StreamingOutput {
+public class ServerErrorStream extends ServerErrorImpl implements StreamingOutput {
 
   private final Consumer<OutputStream> _streamer;
 
-  public HealthResponseStream(Consumer<OutputStream> streamer) {
+  public ServerErrorStream(Consumer<OutputStream> streamer) {
     _streamer = streamer;
   }
 

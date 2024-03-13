@@ -20,6 +20,4 @@ public class PrepResponseStream extends PrepResponseImpl implements StreamingOut
   public void write(OutputStream output) throws IOException, WebApplicationException {
     _streamer.accept(output);
   }
-
 }
-

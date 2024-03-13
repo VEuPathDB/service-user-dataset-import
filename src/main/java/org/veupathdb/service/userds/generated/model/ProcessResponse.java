@@ -23,11 +23,14 @@ public interface ProcessResponse {
     @JsonProperty("ok")
     OK("ok");
 
-    private String name;
+    public final String value;
+
+    public String getValue() {
+      return this.value;
+    }
 
     StatusType(String name) {
-      this.name = name;
+      this.value = name;
     }
-    public String getValue(){ return name; } 
-}
+  }
 }
